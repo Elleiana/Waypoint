@@ -197,6 +197,18 @@
     .btn-session.save:hover { border-color: var(--save-text); color: var(--save-text); background: var(--save-hover-bg); }
 
     /* live check */
+    /* workbench sections */
+    .workbench-section-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: var(--text-title); margin-bottom: 0.3rem; }
+    .workbench-section-help { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.7rem; color: var(--text-help); margin-bottom: 0.75rem; line-height: 1.5; }
+    .workbench-divider { border: none; border-top: 1px solid var(--border-soft); margin: 1.25rem 0; }
+    .import-row { display: flex; flex-direction: column; gap: 0.65rem; }
+    .import-textarea { background: var(--bg-input); border: 1px solid var(--border-soft); border-radius: 4px; padding: 0.65rem 0.75rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--text-body); outline: none; width: 100%; resize: none; height: 100px; line-height: 1.65; transition: border-color 0.15s; }
+    .import-textarea:focus { border-color: #008080; }
+    .import-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .import-feedback { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #5aab72; }
+    html.light .import-feedback { color: #1a6e34; }
+
+    /* live check */
     .check-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
     .base-url-wrap { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; min-width: 160px; }
     .base-url-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; }
@@ -226,6 +238,20 @@
     .accordion-help { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.72rem; color: var(--text-help); line-height: 1.5; display: none; }
     .card-header.accordion.open .accordion-help { display: block; }
     #cors-warning { background: var(--cors-bg); border: 1px solid var(--cors-bd); border-radius: 4px; padding: 0.65rem 0.85rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--cors-text); margin-bottom: 1.25rem; line-height: 1.6; }
+
+    /* hopper */
+    .hopper-chain { display: flex; flex-direction: column; gap: 0.35rem; background: var(--bg-input); border: 1px solid var(--border-soft); border-radius: 6px; padding: 0.75rem 0.85rem; }
+    .hopper-chain-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.15rem; }
+    .hopper-chain-path { font-family: 'IBM Plex Mono', monospace; font-size: 0.71rem; color: var(--cors-text); line-height: 1.8; }
+    .hopper-chain-path .hop { color: var(--text-muted); margin: 0 0.3rem; }
+    .hopper-fix { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; padding-top: 0.4rem; border-top: 1px solid var(--border-inner); flex-wrap: wrap; }
+    .hopper-fix-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; color: var(--tag-ok-text); }
+    .hopper-fix-path { font-family: 'IBM Plex Mono', monospace; font-size: 0.71rem; color: var(--tag-ok-text); }
+    .btn-hopper-fix { background: none; border: 1px solid var(--tag-ok-bd); color: var(--tag-ok-text); border-radius: 3px; padding: 0.2rem 0.6rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .btn-hopper-fix:hover { background: var(--tag-ok-bg); }
+    .report-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
+    .report-preview-frame { background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .report-preview-frame iframe { width: 100%; border: none; min-height: 600px; display: block; }
 
     /* progress bar */
     .progress-wrap { margin-bottom: 1.25rem; }
@@ -328,6 +354,7 @@
     .spider-pend { color:var(--text-muted); border:1px solid var(--border); background:var(--bg-input); animation:pulse 1.2s ease-in-out infinite; }
     html.light .spider-ok  { color:#1a6e34; border-color:#8cc89a; background:#d0edda; }
     html.light .spider-err { color:#8a2020; border-color:#d09090; background:#f8e8e8; }
+    .export-format-bar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem; flex-wrap: wrap; }
     #export-preview { background: var(--export-bg); border: 1px solid var(--border); border-radius: 4px; padding: 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--export-text); max-height: 280px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.65; margin-bottom: 1rem; }
 
     .empty { text-align: center; padding: 2.5rem; color: var(--empty-text); font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; }
@@ -358,6 +385,7 @@
       <button class="nav-tab active" data-page="mapper"><span class="nav-emoji">🗺️</span>Mapper</button>
       <button class="nav-tab" data-page="checker"><span class="nav-emoji">🚦</span>Status</button>
       <button class="nav-tab" data-page="spider"><span class="nav-emoji">🕷️</span>Spider</button>
+      <button class="nav-tab" data-page="report"><span class="nav-emoji">📊</span>Report</button>
     </nav>
   </header>
   <button class="btn-theme" id="btn-theme" title="Toggle light/dark mode">🌙</button>
@@ -369,6 +397,8 @@
     <div class="session-bar">
       <span class="session-timestamp" id="session-timestamp"></span>
       <div class="session-btns">
+        <button class="btn-session btn-undo" id="btn-undo" disabled title="Undo (Ctrl+Z)">↩ Undo</button>
+        <button class="btn-session btn-redo" id="btn-redo" disabled title="Redo (Ctrl+Y)">↪ Redo</button>
         <button class="btn-session save" id="btn-save-session">↓ Save session</button>
         <label class="btn-session" id="btn-load-label" title="Load a previously saved session">↑ Load session<input type="file" id="btn-load-session" accept=".json" hidden /></label>
       </div>
@@ -419,11 +449,30 @@
       </div>
       <div class="accordion-body" id="rules-accordion-body">
         <div class="card-body">
+
+          <!-- Pattern Rules section -->
+          <div class="workbench-section-label">Pattern Rules</div>
+          <div class="workbench-section-help">Auto-confirm redirects matching a find-and-replace pattern. Applied in order, first match wins.</div>
           <div class="rules-list" id="rules-list"></div>
           <div class="rules-actions">
             <button class="btn-rule-add" id="btn-rule-add">+ add rule</button>
             <button class="btn-rule-apply" id="btn-rule-apply" disabled>Apply rules</button>
           </div>
+
+          <div class="workbench-divider"></div>
+
+          <!-- Bulk Import section -->
+          <div class="workbench-section-label">Bulk Import Existing Redirects</div>
+          <div class="workbench-section-help">Import a redirects file to pre-populate confirmed mappings. Supports CSV (old,new columns), Apache .htaccess, and Nginx rewrite rules. Only rows matching your current old URLs will be applied.</div>
+          <div class="import-row">
+            <textarea id="import-input" class="import-textarea" placeholder="Paste .htaccess rules, Nginx rewrites, or CSV (old,new)…" spellcheck="false"></textarea>
+            <div class="import-actions">
+              <label class="btn-rule-add" style="cursor:pointer;">↑ upload file<input type="file" id="import-file" accept=".csv,.txt,.conf,.htaccess" hidden /></label>
+              <button class="btn-rule-apply" id="btn-import-apply" disabled>Import</button>
+              <span class="import-feedback hidden" id="import-feedback"></span>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -477,6 +526,22 @@
         <div id="loop-rows" style="display:flex;flex-direction:column;gap:0.35rem;"></div>
       </div>
     </div>
+
+    <!-- Hopper card -->
+    <div class="section-card" style="margin-top:1rem;">
+      <div class="card-header">
+        <div class="card-header-text">
+          <div class="card-title">Hopper</div>
+          <div class="card-help">Detects redirect chains across your confirmed redirects — where A → B → C creates unnecessary hops. Anything over one hop is flagged, with a suggested flattened redirect.</div>
+        </div>
+        <button class="btn-check" id="btn-check-chains">Check for chains</button>
+      </div>
+      <div id="hopper-results" class="hidden" style="padding:1rem;">
+        <div id="hopper-summary" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:0.75rem;"></div>
+        <div id="hopper-rows" style="display:flex;flex-direction:column;gap:0.5rem;"></div>
+      </div>
+    </div>
+
   </div><!-- end #page-checker -->
 
   <!-- ── PAGE: Spider ── -->
@@ -526,6 +591,31 @@
     </div>
   </div><!-- end #page-spider -->
 
+  <!-- ── PAGE: Report ── -->
+  <div id="page-report" class="hidden">
+    <div class="section-card">
+      <div class="card-header">
+        <div class="card-header-text">
+          <div class="card-title">Report</div>
+          <div class="card-help">Generate a clean, shareable summary of your migration — URL counts, confirmed redirects, warnings, and live check results.</div>
+        </div>
+        <button class="btn-check" id="btn-generate-report">Generate report</button>
+      </div>
+    </div>
+    <div id="report-output" class="hidden" style="margin-top:1rem;">
+      <div class="report-toolbar">
+        <span id="report-generated-at" class="session-timestamp"></span>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn-session save" id="btn-download-report">↓ Download HTML</button>
+          <button class="btn-session save" id="btn-download-pdf">↓ Download PDF</button>
+          <button class="btn-session" id="btn-copy-report">⧉ Copy HTML</button>
+        </div>
+      </div>
+      <div id="report-preview" class="report-preview-frame"></div>
+    </div>
+    <div id="report-empty" class="placeholder">analyse some URLs first, then generate a report</div>
+  </div><!-- end #page-report -->
+
   <!-- ── Results (mapper page) ── -->
   <div id="page-mapper-results">
     <div id="results" class="hidden" style="margin-top:1.5rem;">
@@ -566,8 +656,14 @@
       <div id="tab-export" class="hidden">
         <div id="export-empty" class="empty hidden">confirm redirects in the mapping tab first</div>
         <div id="export-content" class="hidden">
+          <div class="export-format-bar">
+            <span class="filter-label">format:</span>
+            <button class="pill active" data-format="csv">CSV</button>
+            <button class="pill" data-format="htaccess">.htaccess</button>
+            <button class="pill" data-format="nginx">Nginx</button>
+          </div>
           <pre id="export-preview"></pre>
-          <button class="btn-download" id="btn-download">↓ download CSV</button>
+          <button class="btn-download" id="btn-download">↓ download</button>
         </div>
       </div>
       <div id="tab-warnings" class="hidden">
@@ -591,8 +687,49 @@ let state = {
   search: '',
   checking: false,
   page: 'mapper',
-  rules: [], // [{ find, replace }]
+  rules: [],
+  exportFormat: 'csv',
 };
+
+// ── Undo / Redo ────────────────────────────────────────────────────────────────
+const history = { stack: [], cursor: -1, MAX: 50 };
+
+function snapshot() {
+  // Drop any redo states ahead of cursor
+  history.stack = history.stack.slice(0, history.cursor + 1);
+  history.stack.push(JSON.parse(JSON.stringify(state.rows)));
+  if (history.stack.length > history.MAX) history.stack.shift();
+  history.cursor = history.stack.length - 1;
+  updateUndoButtons();
+}
+
+function undo() {
+  if (history.cursor <= 0) return;
+  history.cursor--;
+  state.rows = JSON.parse(JSON.stringify(history.stack[history.cursor]));
+  updateUndoButtons();
+  render();
+}
+
+function redo() {
+  if (history.cursor >= history.stack.length - 1) return;
+  history.cursor++;
+  state.rows = JSON.parse(JSON.stringify(history.stack[history.cursor]));
+  updateUndoButtons();
+  render();
+}
+
+function updateUndoButtons() {
+  const btnUndo = document.getElementById('btn-undo');
+  const btnRedo = document.getElementById('btn-redo');
+  if (btnUndo) btnUndo.disabled = history.cursor <= 0;
+  if (btnRedo) btnRedo.disabled = history.cursor >= history.stack.length - 1;
+}
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); redo(); }
+});
 
 // ── Theme toggle ───────────────────────────────────────────────────────────────
 const btnTheme = document.getElementById('btn-theme');
@@ -613,6 +750,7 @@ function switchPage(page) {
   document.getElementById('page-mapper-results').classList.toggle('hidden', page !== 'mapper');
   document.getElementById('page-checker').classList.toggle('hidden', page !== 'checker');
   document.getElementById('page-spider').classList.toggle('hidden', page !== 'spider');
+  document.getElementById('page-report').classList.toggle('hidden', page !== 'report');
 }
 document.querySelectorAll('.nav-tab').forEach(btn => btn.addEventListener('click', () => switchPage(btn.dataset.page)));
 
@@ -723,6 +861,7 @@ function updateRulePreview() {
 }
 
 function applyRules() {
+  snapshot();
   const validRules = state.rules.filter(r => r.find);
   let applied = 0;
   state.rows.forEach(r => {
@@ -750,6 +889,81 @@ document.getElementById('btn-rule-apply').addEventListener('click', applyRules);
 // Initialise with one empty rule ready to go
 state.rules.push({ find: '', replace: '' });
 renderRules();
+
+// ── Bulk redirect import ───────────────────────────────────────────────────────
+function parseImport(raw) {
+  const results = []; // [{ old, new }]
+  const lines = raw.trim().split(/\r?\n/).map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+
+  lines.forEach(line => {
+    // Apache: Redirect 301 /old /new  OR  Redirect /old /new
+    let m = line.match(/^Redirect(?:\s+\d{3})?\s+(\S+)\s+(\S+)/i);
+    if (m) { results.push({ from: m[1], to: m[2] }); return; }
+
+    // Nginx: rewrite ^/old$ /new permanent;  OR  rewrite ^/old /new last;
+    m = line.match(/^rewrite\s+\^?(\S+?)\$?\s+(\S+)\s+/i);
+    if (m) { results.push({ from: m[1], to: m[2] }); return; }
+
+    // CSV: "old","new"  OR  old,new
+    const cols = line.match(/(".*?"|[^,]+)/g);
+    if (cols && cols.length >= 2) {
+      const from = cols[0].replace(/^"|"$/g,'').trim();
+      const to   = cols[1].replace(/^"|"$/g,'').trim();
+      if (from && to && from !== 'old url' && from.toLowerCase() !== 'old') {
+        try { results.push({ from: new URL(from).pathname, to: new URL(to).pathname }); return; } catch {}
+        if (from.startsWith('/')) { results.push({ from, to }); return; }
+      }
+    }
+  });
+
+  return results;
+}
+
+function applyImport(pairs) {
+  let applied = 0, skipped = 0;
+  pairs.forEach(({ from, to }) => {
+    const row = state.rows.find(r => r.old === from && r.status === 'redirect');
+    if (row) { row.confirmed = to; applied++; }
+    else skipped++;
+  });
+  return { applied, skipped };
+}
+
+function showImportFeedback(msg) {
+  const el = document.getElementById('import-feedback');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 4000);
+}
+
+function updateImportBtn() {
+  document.getElementById('btn-import-apply').disabled =
+    !document.getElementById('import-input').value.trim();
+}
+
+document.getElementById('import-input').addEventListener('input', updateImportBtn);
+
+document.getElementById('import-file').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('import-input').value = ev.target.result;
+    updateImportBtn();
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+document.getElementById('btn-import-apply').addEventListener('click', () => {
+  const raw = document.getElementById('import-input').value;
+  const pairs = parseImport(raw);
+  if (!pairs.length) { showImportFeedback('No valid redirect rules found.'); return; }
+  if (!state.rows.length) { showImportFeedback('Analyse your URLs first before importing.'); return; }
+  snapshot();
+  const { applied, skipped } = applyImport(pairs);
+  showImportFeedback(`✓ ${applied} applied, ${skipped} not matched`);
+  render();
+});
 
 // ── Session save / load ────────────────────────────────────────────────────────
 function updateTimestamp(isoString) {
@@ -814,6 +1028,9 @@ function loadSession(file) {
   reader.readAsText(file);
 }
 
+document.getElementById('btn-undo').addEventListener('click', undo);
+document.getElementById('btn-redo').addEventListener('click', redo);
+
 document.getElementById('btn-save-session').addEventListener('click', saveSession);
 document.getElementById('btn-load-session').addEventListener('change', e => {
   const file = e.target.files[0];
@@ -826,6 +1043,46 @@ function buildCSV() {
   const confirmed = state.rows.filter(r => r.status === 'redirect' && r.confirmed);
   return [['Old URL','New URL','Type'], ...confirmed.map(r => [r.old, r.confirmed, r.redirectType||301])]
     .map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+}
+
+function buildHtaccess() {
+  const confirmed = state.rows.filter(r => r.status === 'redirect' && r.confirmed);
+  const lines = ['# Generated by Waypoint // site migration toolkit', ''];
+  confirmed.forEach(r => {
+    const type = r.redirectType === 302 ? '302' : '301';
+    lines.push(`Redirect ${type} ${r.old} ${r.confirmed}`);
+  });
+  return lines.join('\n');
+}
+
+function buildNginx() {
+  const confirmed = state.rows.filter(r => r.status === 'redirect' && r.confirmed);
+  const lines = ['# Generated by Waypoint // site migration toolkit', ''];
+  confirmed.forEach(r => {
+    const flag = r.redirectType === 302 ? 'redirect' : 'permanent';
+    // Escape special regex chars in the path
+    const escaped = r.old.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    lines.push(`rewrite ^${escaped}$ ${r.confirmed} ${flag};`);
+  });
+  return lines.join('\n');
+}
+
+function buildExport() {
+  if (state.exportFormat === 'htaccess') return buildHtaccess();
+  if (state.exportFormat === 'nginx') return buildNginx();
+  return buildCSV();
+}
+
+function exportFilename() {
+  const d = new Date().toISOString().slice(0,10);
+  if (state.exportFormat === 'htaccess') return `redirects-${d}.htaccess`;
+  if (state.exportFormat === 'nginx') return `redirects-${d}.conf`;
+  return `redirects-${d}.csv`;
+}
+
+function exportMime() {
+  if (state.exportFormat === 'csv') return 'text/csv';
+  return 'text/plain';
 }
 
 // ── Live checking ──────────────────────────────────────────────────────────────
@@ -910,24 +1167,25 @@ function render() {
   document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.filter===state.filter));
 
   detectLoops();
+  detectChains();
 
   // Update warnings tab badge
-  const loopCount = state.rows.filter(r => r.loopChain).length;
+  const loopCount = state.rows.filter(r => r.loopChain || r.chainFlag).length;
   const warningsTabBtn = document.getElementById('warnings-tab-btn');
   if (warningsTabBtn) warningsTabBtn.textContent = loopCount > 0 ? `🚩 ${loopCount}` : '🚩';
 
   // Render warnings tab content
   if (state.tab === 'warnings') {
-    const loopRows = state.rows.filter(r => r.loopChain);
+    const flaggedRows = state.rows.filter(r => r.loopChain || r.chainFlag);
     const warningsEmpty = document.getElementById('warnings-empty');
     const warningsRows = document.getElementById('warnings-rows');
-    if (loopRows.length === 0) {
+    if (flaggedRows.length === 0) {
       warningsEmpty.classList.remove('hidden');
       warningsRows.innerHTML = '';
     } else {
       warningsEmpty.classList.add('hidden');
       warningsRows.innerHTML = '';
-      loopRows.forEach(row => warningsRows.appendChild(makeRow(row)));
+      flaggedRows.forEach(row => warningsRows.appendChild(makeRow(row)));
     }
   }
 
@@ -956,7 +1214,13 @@ function render() {
     const has = confirmed.length > 0;
     document.getElementById('export-empty').classList.toggle('hidden', has);
     document.getElementById('export-content').classList.toggle('hidden', !has);
-    if (has) document.getElementById('export-preview').textContent = buildCSV();
+    if (has) {
+      document.getElementById('export-preview').textContent = buildExport();
+      document.getElementById('btn-download').textContent = `↓ download ${exportFilename().split('/').pop()}`;
+    }
+    // Sync format pills
+    document.querySelectorAll('.export-format-bar .pill').forEach(p =>
+      p.classList.toggle('active', p.dataset.format === state.exportFormat));
   }
 
   updateRulePreview();
@@ -1002,7 +1266,11 @@ function makeRow(row) {
     ? `<button class="btn-suggestion${row.confirmed===row.suggestion?' accepted':''}" data-old="${esc(row.old)}" data-val="${esc(row.suggestion)}">${esc(row.suggestion)}<span class="score">${Math.round(row.score*100)}%</span></button>`
     : `<span class="no-match">no match found</span>`;
   const customTag = (row.confirmed && row.confirmed!==row.suggestion) ? `<span class="custom-tag">custom: ${esc(row.confirmed)}</span>` : '';
-  const loopBadge = row.loopChain ? `<span class="loop-badge" title="Loop detected: ${esc(row.loopChain)}">⚠️</span>` : '';
+  const loopBadge = row.loopChain
+    ? `<span class="loop-badge" title="Loop detected: ${esc(row.loopChain)}">⚠️</span>`
+    : row.chainFlag
+      ? `<span class="loop-badge" title="Redirect chain: ${esc(row.chainFlag)}">⚠️</span>`
+      : '';
   const typeBtn = row.confirmed ? `<button class="btn-type${row.redirectType===302?' is-302':''}" data-old="${esc(row.old)}" title="Click to toggle redirect type">${row.redirectType||301}</button>` : '';
   const suggArea = `<div class="suggestion-area" id="sug-${cssId(row.old)}">${suggBtn}<button class="btn-edit" data-old="${esc(row.old)}" title="Edit">✎</button>${customTag}${loopBadge}${typeBtn}</div>`;
   const editArea = `<div class="edit-area hidden" id="edit-${cssId(row.old)}"><input class="edit-input" list="cands-${cssId(row.old)}" value="${esc(row.confirmed||row.suggestion||'')}" data-old="${esc(row.old)}" /><datalist id="cands-${cssId(row.old)}">${(row.candidates||[]).map(c=>`<option value="${esc(c.url)}">`).join('')}</datalist><button class="btn-sm btn-ok" data-old="${esc(row.old)}">✓</button><button class="btn-sm btn-cancel" data-old="${esc(row.old)}">✕</button></div>`;
@@ -1011,6 +1279,7 @@ function makeRow(row) {
   div.querySelector('.btn-type')?.addEventListener('click', e => {
     e.stopPropagation();
     const o = e.currentTarget.dataset.old;
+    snapshot();
     const r = state.rows.find(r => r.old === o);
     r.redirectType = r.redirectType === 302 ? 301 : 302;
     render();
@@ -1018,6 +1287,7 @@ function makeRow(row) {
 
   div.querySelector('.btn-suggestion')?.addEventListener('click', e => {
     const {old:o,val:v} = e.currentTarget.dataset;
+    snapshot();
     const r = state.rows.find(r=>r.old===o); r.confirmed = r.confirmed===v?null:v; render();
   });
   div.querySelector('.btn-edit')?.addEventListener('click', e => {
@@ -1029,6 +1299,7 @@ function makeRow(row) {
   div.querySelector('.btn-ok')?.addEventListener('click', e => {
     const o = e.currentTarget.dataset.old;
     const val = document.getElementById(`edit-${cssId(o)}`).querySelector('input').value.trim();
+    snapshot();
     const r = state.rows.find(r=>r.old===o); r.confirmed = val||null; render();
   });
   div.querySelector('.btn-cancel')?.addEventListener('click', e => {
@@ -1100,6 +1371,9 @@ document.getElementById('btn-analyse').addEventListener('click', () => {
   if (!oldUrls.length || !newUrls.length) return;
   state.rows = runAnalysis(oldUrls, newUrls);
   state.tab = 'map'; state.filter = 'all'; state.search = '';
+  // Reset history for fresh analysis
+  history.stack = []; history.cursor = -1;
+  snapshot();
   document.getElementById('search-input').value = '';
   document.getElementById('search-clear').classList.add('hidden');
   document.getElementById('results').classList.remove('hidden');
@@ -1116,6 +1390,7 @@ document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', (
 document.querySelectorAll('.pill').forEach(btn => btn.addEventListener('click', () => { state.filter = btn.dataset.filter; render(); }));
 
 document.getElementById('btn-accept-all').addEventListener('click', () => {
+  snapshot();
   const q = state.search.toLowerCase();
   state.rows.forEach(r => {
     if (r.status !== 'redirect' || r.confirmed || !r.suggestion) return;
@@ -1127,6 +1402,168 @@ document.getElementById('btn-accept-all').addEventListener('click', () => {
     r.confirmed = r.suggestion;
   });
   render();
+});
+
+// ── Report ─────────────────────────────────────────────────────────────────────
+function generateReportHTML() {
+  const now = new Date();
+  const fmt = d => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  const confirmed  = state.rows.filter(r => r.status==='redirect' && r.confirmed);
+  const unchanged  = state.rows.filter(r => r.status==='unchanged');
+  const needsRedir = state.rows.filter(r => r.status==='redirect');
+  const unconfirmed = needsRedir.filter(r => !r.confirmed);
+  const loops = state.rows.filter(r => r.loopChain);
+  const type302 = confirmed.filter(r => r.redirectType===302);
+  const pct = needsRedir.length > 0 ? Math.round((confirmed.length/needsRedir.length)*100) : 0;
+
+  const redirectRows = confirmed.map(r => `
+    <tr>
+      <td>${r.old}</td>
+      <td>${r.confirmed}</td>
+      <td class="type ${r.redirectType===302?'t302':'t301'}">${r.redirectType||301}</td>
+    </tr>`).join('');
+
+  const loopRows = loops.map(r => `
+    <tr class="warn-row">
+      <td>⚠️</td>
+      <td>${r.old}</td>
+      <td>${r.confirmed||'—'}</td>
+      <td style="color:#c86a5a;font-size:0.75rem;">${r.loopChain}</td>
+    </tr>`).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Waypoint Report — ${fmt(now)}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#f8f8f4;color:#1a1a20;padding:2rem;}
+  h1{font-size:1.6rem;font-weight:700;color:#111;margin-bottom:0.2rem;}
+  .subtitle{font-size:0.8rem;color:#888;margin-bottom:2rem;font-family:monospace;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:2rem;}
+  .stat-card{background:#fff;border:1px solid #ddddd5;border-radius:8px;padding:1rem 1.25rem;}
+  .stat-card .n{font-size:2rem;font-weight:700;line-height:1;}
+  .stat-card .l{font-size:0.72rem;color:#888;margin-top:0.2rem;}
+  .stat-card.teal .n{color:#008080;}
+  .stat-card.green .n{color:#2a8a48;}
+  .stat-card.red .n{color:#c86a5a;}
+  .stat-card.amber .n{color:#a07010;}
+  .progress-bar{height:8px;background:#e8e8e0;border-radius:99px;overflow:hidden;margin-bottom:2rem;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#008080,#00a0a0);border-radius:99px;}
+  h2{font-size:0.95rem;font-weight:600;color:#444;margin-bottom:0.75rem;margin-top:1.75rem;padding-bottom:0.4rem;border-bottom:1px solid #e8e8e0;}
+  table{width:100%;border-collapse:collapse;font-size:0.78rem;background:#fff;border-radius:8px;overflow:hidden;border:1px solid #ddddd5;}
+  th{background:#f0efe9;padding:0.5rem 0.85rem;text-align:left;font-size:0.7rem;color:#666;letter-spacing:0.05em;text-transform:uppercase;}
+  td{padding:0.45rem 0.85rem;border-top:1px solid #f0efe9;color:#282832;font-family:monospace;font-size:0.75rem;}
+  .type{font-weight:600;} .t301{color:#008080;} .t302{color:#a07010;}
+  .warn-row td{background:#fffbf0;}
+  .empty{color:#aaa;font-size:0.78rem;font-style:italic;padding:1rem 0;}
+  .footer{margin-top:2rem;font-size:0.7rem;color:#bbb;font-family:monospace;}
+  @media print{body{padding:1rem;background:#fff;} .progress-bar{-webkit-print-color-adjust:exact;print-color-adjust:exact;} .progress-fill{-webkit-print-color-adjust:exact;print-color-adjust:exact;} .stat-card{border:1px solid #ddd;break-inside:avoid;} table{break-inside:auto;} tr{break-inside:avoid;} .warn-row td{background:#fffbf0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+</style>
+</head>
+<body>
+<h1>Waypoint — Migration Report</h1>
+<div class="subtitle">Generated ${fmt(now)}</div>
+
+<div class="grid">
+  <div class="stat-card teal"><div class="n">${state.rows.length}</div><div class="l">Total URLs</div></div>
+  <div class="stat-card green"><div class="n">${unchanged.length}</div><div class="l">Unchanged</div></div>
+  <div class="stat-card teal"><div class="n">${confirmed.length}</div><div class="l">Confirmed</div></div>
+  <div class="stat-card amber"><div class="n">${unconfirmed.length}</div><div class="l">Unconfirmed</div></div>
+  <div class="stat-card red"><div class="n">${loops.length}</div><div class="l">Loop warnings</div></div>
+  <div class="stat-card amber"><div class="n">${type302.length}</div><div class="l">302 (temporary)</div></div>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+<p style="font-size:0.75rem;color:#888;margin-top:-1.5rem;margin-bottom:2rem;">${pct}% of redirects confirmed</p>
+
+${confirmed.length > 0 ? `
+<h2>Confirmed Redirects (${confirmed.length})</h2>
+<table>
+  <thead><tr><th>Old URL</th><th>New URL</th><th>Type</th></tr></thead>
+  <tbody>${redirectRows}</tbody>
+</table>` : '<h2>Confirmed Redirects</h2><div class="empty">None confirmed yet.</div>'}
+
+${loops.length > 0 ? `
+<h2>⚠️ Loop Warnings (${loops.length})</h2>
+<table>
+  <thead><tr><th></th><th>Old URL</th><th>Destination</th><th>Chain</th></tr></thead>
+  <tbody>${loopRows}</tbody>
+</table>` : '<h2>Loop Warnings</h2><div class="empty">✨ No loops detected.</div>'}
+
+${unconfirmed.length > 0 ? `
+<h2>Unconfirmed Redirects (${unconfirmed.length})</h2>
+<table>
+  <thead><tr><th>Old URL</th><th>Suggested destination</th></tr></thead>
+  <tbody>${unconfirmed.map(r=>`<tr><td>${r.old}</td><td style="color:#aaa">${r.suggestion||'—'}</td></tr>`).join('')}</tbody>
+</table>` : ''}
+
+<div class="footer">Generated by Waypoint // site migration toolkit</div>
+</body></html>`;
+}
+
+function renderReport() {
+  if (!state.rows.length) {
+    document.getElementById('report-output').classList.add('hidden');
+    document.getElementById('report-empty').classList.remove('hidden');
+    return;
+  }
+  const html = generateReportHTML();
+  document.getElementById('report-empty').classList.add('hidden');
+  document.getElementById('report-output').classList.remove('hidden');
+
+  // Render in iframe for live preview
+  const frame = document.getElementById('report-preview');
+  frame.innerHTML = '<iframe id="report-iframe"></iframe>';
+  const iframe = document.getElementById('report-iframe');
+  const doc = iframe.contentDocument || iframe.contentWindow.document;
+  doc.open(); doc.write(html); doc.close();
+
+  // Auto-resize iframe to content height
+  iframe.onload = () => {
+    iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 32) + 'px';
+  };
+
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('report-generated-at').textContent =
+    `generated ${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  return html;
+}
+
+let lastReportHTML = '';
+
+document.getElementById('btn-generate-report').addEventListener('click', () => {
+  lastReportHTML = renderReport();
+});
+
+document.getElementById('btn-download-report').addEventListener('click', () => {
+  if (!lastReportHTML) return;
+  const blob = new Blob([lastReportHTML], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const d = new Date();
+  a.download = `waypoint-report-${d.toISOString().slice(0,10)}.html`;
+  a.click();
+});
+
+document.getElementById('btn-download-pdf').addEventListener('click', () => {
+  if (!lastReportHTML) return;
+  const win = window.open('', '_blank');
+  win.document.write(lastReportHTML);
+  win.document.close();
+  win.addEventListener('load', () => { win.focus(); win.print(); });
+});
+
+document.getElementById('btn-copy-report').addEventListener('click', () => {
+  if (!lastReportHTML) return;
+  navigator.clipboard.writeText(lastReportHTML).then(() => {
+    const btn = document.getElementById('btn-copy-report');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '⧉ Copy HTML', 2000);
+  });
 });
 
 // ── Loop detection ─────────────────────────────────────────────────────────────
@@ -1198,6 +1635,91 @@ document.getElementById('btn-check-loops').addEventListener('click', () => {
   const loops = detectLoops();
   renderLoopResults(loops);
   render(); // re-render mapper rows to show/hide badges
+});
+
+// ── Hopper (chain detector) ────────────────────────────────────────────────────
+function detectChains() {
+  const redirectMap = {};
+  state.rows.forEach(r => { if (r.status==='redirect' && r.confirmed) redirectMap[r.old] = r.confirmed; });
+
+  const chains = [];
+  const seen = new Set();
+  // Reset chain flags
+  state.rows.forEach(r => r.chainFlag = null);
+
+  Object.keys(redirectMap).forEach(start => {
+    if (seen.has(start)) return;
+    const chain = [start];
+    let current = redirectMap[start];
+    while (current && redirectMap[current] && !chain.includes(current)) {
+      chain.push(current);
+      current = redirectMap[current];
+    }
+    if (chain.length > 1) {
+      const destination = current && !redirectMap[current] ? current : chain[chain.length - 1];
+      chains.push({ chain, destination });
+      // Tag each row in the chain
+      chain.forEach(u => {
+        const row = state.rows.find(r => r.old === u);
+        if (row) row.chainFlag = chain.concat(destination).join(' → ');
+      });
+    }
+    chain.forEach(u => seen.add(u));
+  });
+
+  return chains;
+}
+
+function renderHopperResults(chains) {
+  const results = document.getElementById('hopper-results');
+  const summary = document.getElementById('hopper-summary');
+  const rows = document.getElementById('hopper-rows');
+  results.classList.remove('hidden');
+  rows.innerHTML = '';
+
+  if (chains.length === 0) {
+    summary.textContent = '✓ No chains detected — all redirects resolve in a single hop.';
+    summary.style.color = 'var(--tag-ok-text)';
+    return;
+  }
+
+  summary.textContent = `${chains.length} chain${chains.length!==1?'s':''} detected — consider flattening to improve performance.`;
+  summary.style.color = 'var(--cors-text)';
+
+  chains.forEach(({ chain, destination }) => {
+    const div = document.createElement('div');
+    div.className = 'hopper-chain';
+
+    const pathHtml = chain.map((u, i) =>
+      `<span>${u}</span>${i < chain.length - 1 ? '<span class="hop">→</span>' : ''}`
+    ).join('') + `<span class="hop">→</span><span>${destination}</span>`;
+
+    div.innerHTML = `
+      <div class="hopper-chain-label">${chain.length} hop${chain.length!==1?'s':''}</div>
+      <div class="hopper-chain-path">${pathHtml}</div>
+      <div class="hopper-fix">
+        <span class="hopper-fix-label">Flatten to:</span>
+        <span class="hopper-fix-path">${chain[0]} → ${destination}</span>
+        <button class="btn-hopper-fix" data-from="${chain[0]}" data-to="${destination}">Apply fix</button>
+      </div>`;
+
+    div.querySelector('.btn-hopper-fix').addEventListener('click', e => {
+      const { from, to } = e.currentTarget.dataset;
+      snapshot();
+      const row = state.rows.find(r => r.old === from && r.status === 'redirect');
+      if (row) { row.confirmed = to; render(); }
+      // Re-run to update the list
+      const updatedChains = detectChains();
+      renderHopperResults(updatedChains);
+    });
+
+    rows.appendChild(div);
+  });
+}
+
+document.getElementById('btn-check-chains').addEventListener('click', () => {
+  const chains = detectChains();
+  renderHopperResults(chains);
 });
 let spiderState = {
   running: false,
@@ -1365,9 +1887,17 @@ document.getElementById('btn-spider-export').addEventListener('click', () => {
 });
 
 document.getElementById('btn-download').addEventListener('click', () => {
-  const blob = new Blob([buildCSV()], { type:'text/csv' });
+  const blob = new Blob([buildExport()], { type: exportMime() });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'redirects.csv'; a.click();
+  a.download = exportFilename(); a.click();
+});
+
+// Export format pills
+document.querySelectorAll('.export-format-bar .pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.exportFormat = btn.dataset.format;
+    render();
+  });
 });
 </script>
 </body>
