@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Waypoint</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpolygon points='16,2 19,14 16,11 13,14' fill='%23008080' opacity='0.9'/%3E%3Cpolygon points='16,30 19,18 16,21 13,18' fill='%23008080' opacity='0.55'/%3E%3Cpolygon points='2,16 14,13 11,16 14,19' fill='%23008080' opacity='0.55'/%3E%3Cpolygon points='30,16 18,13 21,16 18,19' fill='%23008080' opacity='0.9'/%3E%3Ccircle cx='16' cy='16' r='2.2' fill='%23008080'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
@@ -301,6 +302,10 @@
     html.light .pill.active { background: #cceaea; }
     .btn-accept-all { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; padding: 0.3rem 0.85rem; background: #001f1f; border: 1px solid #004d4d; color: #008080; border-radius: 3px; cursor: pointer; transition: all 0.15s; }
     .btn-accept-all--dim { background: none !important; border-color: var(--border) !important; color: var(--text-muted) !important; cursor: not-allowed !important; }
+    .btn-flatten-chains { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; padding: 0.3rem 0.85rem; background: none; border: 1px solid #004d4d; color: #008080; border-radius: 3px; cursor: pointer; transition: all 0.15s; }
+    .btn-flatten-chains:hover { background: #001f1f; border-color: #008080; color: #00b3b3; }
+    html.light .btn-flatten-chains { border-color: #60b0b0; }
+    html.light .btn-flatten-chains:hover { background: #cceaea; }
     html.light .btn-accept-all { background: #cceaea; border-color: #60b0b0; }
     .btn-accept-all:hover { background: #002d2d; border-color: #008080; color: #00b3b3; }
     html.light .btn-accept-all:hover { background: #b0dede; }
@@ -520,6 +525,7 @@
           </div>
           <div class="check-divider"></div>
           <button class="btn-check" id="btn-check" disabled>Check live URLs</button>
+          <button class="btn-check hidden" id="btn-recheck" style="background:var(--bg-card);border:1px solid #004d4d;color:#008080;" title="Re-check only URLs that have changed since the last check">↺ re-check changed</button>
         </div>
       </div>
     </div>
@@ -553,7 +559,10 @@
           <div class="card-title">Hopper</div>
           <div class="card-help">Detects redirect chains across your confirmed redirects — where A → B → C creates unnecessary hops. Anything over one hop is flagged, with a suggested flattened redirect.</div>
         </div>
-        <button class="btn-check" id="btn-check-chains">Check for chains</button>
+        <div style="display:flex;gap:0.5rem;align-self:center;">
+          <button class="btn-flatten-chains hidden" id="btn-flatten-chains" title="Flatten all chains to single hops in one go">🔗 flatten all</button>
+          <button class="btn-check" id="btn-check-chains">Check for chains</button>
+        </div>
       </div>
       <div id="hopper-results" class="hidden" style="padding:1rem;">
         <div id="hopper-summary" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:0.75rem;"></div>
@@ -569,7 +578,7 @@
       <div class="card-header">
         <div class="card-header-text">
           <div class="card-title">Spider</div>
-          <div class="card-help">Crawl a site to discover all internal URLs. Works best on sites that allow cross-origin requests — most public sites will show "blocked" due to browser CORS restrictions. For full crawling, use a desktop tool like Screaming Frog and import the CSV.</div>
+          <div class="card-help">Crawl a site to discover all internal URLs. Add a Cloudflare Worker proxy URL below to crawl any site — without it, most sites will be blocked by browser CORS restrictions.</div>
         </div>
       </div>
       <div class="card-body">
@@ -587,7 +596,41 @@
           <button class="btn-check" id="btn-spider-start">Crawl site</button>
           <button class="btn-check hidden" id="btn-spider-stop" style="background:#c86a5a;">Stop</button>
         </div>
-        <div id="spider-status" class="hidden" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:0.5rem;"></div>
+        <div class="check-row">
+          <div class="base-url-wrap">
+            <label class="base-url-label" for="spider-proxy">Proxy</label>
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+              <button class="pill active" id="spider-proxy-auto" data-mode="auto">automatic</button>
+              <button class="pill" id="spider-proxy-manual" data-mode="manual">manual</button>
+              <input class="base-url-input hidden" id="spider-proxy" type="url" placeholder="https://your-worker.workers.dev" style="flex:1;min-width:260px;" />
+            </div>
+          </div>
+          <div style="align-self:flex-end;">
+            <a class="btn-session" href="#" onclick="document.getElementById('spider-proxy-instructions').classList.toggle('hidden');return false;" style="text-decoration:none;display:inline-block;">?</a>
+          </div>
+        </div>
+        <div id="spider-proxy-instructions" class="hidden" style="margin-top:0.85rem;background:var(--bg-input);border:1px solid var(--border-soft);border-radius:6px;padding:0.85rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--text-body);line-height:1.9;">
+          <p style="margin-bottom:0.75rem;color:var(--text-muted);">Browsers block requests to other websites for security reasons (CORS). A proxy sits in between — Waypoint asks the proxy to fetch the page, and the proxy returns it. This lets the Spider crawl any site.</p>
+          <strong style="color:var(--text-title);">Automatic</strong> — uses the built-in Waypoint proxy. Works immediately, no setup needed.<br/>
+          <strong style="color:var(--text-title);">Manual</strong> — use your own Cloudflare Worker proxy if you prefer to host it yourself.<br/><br/>
+
+          <!-- Cloudflare setup accordion -->
+          <div style="border-top:1px solid var(--border-soft);padding-top:0.65rem;margin-top:0.1rem;">
+            <a href="#" onclick="const b=document.getElementById('cf-setup-body');const a=document.getElementById('cf-setup-arrow');b.classList.toggle('hidden');a.textContent=b.classList.contains('hidden')?'▶':'▼';return false;" style="color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:0.5rem;">
+              <span id="cf-setup-arrow" style="font-size:0.6rem;">▶</span>
+              <span>Setting up your own Cloudflare Worker</span>
+            </a>
+            <div id="cf-setup-body" class="hidden" style="margin-top:0.65rem;line-height:2;">
+              1. Create a free account at <a href="https://cloudflare.com" target="_blank" style="color:#008080;">cloudflare.com</a><br/>
+              2. Go to <strong>Workers &amp; Pages</strong> → <strong>Create</strong> → <strong>Create Worker</strong><br/>
+              3. Replace the default code with the contents of <strong>waypoint-worker.js</strong><br/>
+              4. Edit <strong>ALLOWED_ORIGIN</strong> to match your site's URL<br/>
+              5. Click <strong>Deploy</strong> — copy the Worker URL into the manual proxy field<br/><br/>
+              <a href="#" style="color:#008080;text-decoration:none;" onclick="downloadWorker();return false;">↓ Download waypoint-worker.js</a>
+            </div>
+          </div>
+        </div>
+        <div id="spider-status" class="hidden" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-top:0.65rem;"></div>
       </div>
     </div>
 
@@ -1182,7 +1225,7 @@ async function checkUrlReal(fullUrl) {
   }
 }
 
-async function runChecks() {
+async function runChecks(changedOnly = false) {
   const oldBase = normaliseBase(document.getElementById('old-base').value.trim());
   const newBase = normaliseBase(document.getElementById('new-base').value.trim());
   if (!oldBase && !newBase) { alert('Please enter at least one base URL to enable live checking.'); return; }
@@ -1190,17 +1233,30 @@ async function runChecks() {
   state.checking = true;
   document.getElementById('cors-warning').classList.add('hidden');
   document.getElementById('btn-check').disabled = true;
+  document.getElementById('btn-recheck').disabled = true;
   document.getElementById('check-progress-area').classList.remove('hidden');
   document.getElementById('check-progress').textContent = 'starting…';
-  document.getElementById('check-results-container').innerHTML = '';
-  state.rows.forEach(r => {
-    r.oldStatus  = oldBase ? { pending: true } : null;
-    r.destStatus = (newBase && r.confirmed) ? { pending: true } : null;
-  });
+
+  // Determine which rows to check
+  const rowsToCheck = changedOnly
+    ? state.rows.filter(r => r.confirmed !== r._lastCheckedConfirmed)
+    : state.rows;
+
+  if (!changedOnly) {
+    document.getElementById('check-results-container').innerHTML = '';
+    rowsToCheck.forEach(r => {
+      r.oldStatus  = oldBase ? { pending: true } : null;
+      r.destStatus = (newBase && r.confirmed) ? { pending: true } : null;
+    });
+  } else {
+    rowsToCheck.forEach(r => {
+      r.destStatus = (newBase && r.confirmed) ? { pending: true } : null;
+    });
+  }
 
   const toCheck = [];
-  if (oldBase) state.rows.forEach(r => toCheck.push({ row:r, type:'old', url:oldBase+r.old }));
-  if (newBase) state.rows.forEach(r => { if (r.confirmed) toCheck.push({ row:r, type:'dest', url:newBase+r.confirmed }); });
+  if (!changedOnly && oldBase) rowsToCheck.forEach(r => toCheck.push({ row:r, type:'old', url:oldBase+r.old }));
+  if (newBase) rowsToCheck.forEach(r => { if (r.confirmed) toCheck.push({ row:r, type:'dest', url:newBase+r.confirmed }); });
 
   let done = 0, corsBlocked = 0;
   const BATCH = 5;
@@ -1210,16 +1266,23 @@ async function runChecks() {
       if (result.status === 'CORS' || result.status === 'ERR') corsBlocked++;
       if (type === 'old') row.oldStatus = result; else row.destStatus = result;
       done++;
-      document.getElementById('check-progress').textContent = `checking… ${done}/${toCheck.length}`;
+      document.getElementById('check-progress').textContent = `${changedOnly?'re-checking':'checking'}… ${done}/${toCheck.length}`;
       render();
     }));
   }
+
+  // Save last-checked state
+  state.rows.forEach(r => r._lastCheckedConfirmed = r.confirmed);
 
   if (corsBlocked > 0) document.getElementById('cors-warning').classList.remove('hidden');
   state.checking = false;
   document.getElementById('btn-check').disabled = false;
   document.getElementById('check-progress-area').classList.add('hidden');
   document.getElementById('check-progress').textContent = '';
+
+  // Show re-check button after first full check
+  document.getElementById('btn-recheck').classList.remove('hidden');
+  document.getElementById('btn-recheck').disabled = false;
   render();
 }
 
@@ -1288,7 +1351,7 @@ function render() {
   renderRows(displayed);
   renderCheckResults();
 
-  // Accept-all always visible, but dims when nothing to accept
+  // Show accept-all only when there are unconfirmed rows with suggestions visible
   const hasAcceptable = displayed.some(r => r.status==='redirect' && !r.confirmed && r.suggestion);
   const acceptBtn = document.getElementById('btn-accept-all');
   if (acceptBtn) {
@@ -1499,9 +1562,26 @@ document.getElementById('btn-analyse').addEventListener('click', () => {
 });
 
 document.getElementById('btn-check').addEventListener('click', runChecks);
+document.getElementById('btn-recheck').addEventListener('click', () => runChecks(true));
 
 document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => { state.tab = btn.dataset.tab; render(); }));
 document.querySelectorAll('.pill').forEach(btn => btn.addEventListener('click', () => { state.filter = btn.dataset.filter; render(); }));
+
+document.getElementById('btn-flatten-chains').addEventListener('click', () => {
+  const chains = detectChains();
+  if (!chains.length) return;
+  snapshot();
+  chains.forEach(({ chain, destination }) => {
+    chain.forEach(old => {
+      const row = state.rows.find(r => r.old === old && r.status === 'redirect');
+      if (row) row.confirmed = destination;
+    });
+  });
+  render();
+  // Re-run hopper to update results
+  const updatedChains = detectChains();
+  renderHopperResults(updatedChains);
+});
 
 document.getElementById('btn-accept-all').addEventListener('click', () => {
   snapshot();
@@ -1527,6 +1607,7 @@ function generateReportHTML() {
   const needsRedir = state.rows.filter(r => r.status==='redirect');
   const unconfirmed = needsRedir.filter(r => !r.confirmed);
   const loops = state.rows.filter(r => r.loopChain);
+  const chains = detectChains();
   const type302 = confirmed.filter(r => r.redirectType===302);
   const pct = needsRedir.length > 0 ? Math.round((confirmed.length/needsRedir.length)*100) : 0;
 
@@ -1585,7 +1666,7 @@ function generateReportHTML() {
   <div class="stat-card green"><div class="n">${unchanged.length}</div><div class="l">Unchanged</div></div>
   <div class="stat-card teal"><div class="n">${confirmed.length}</div><div class="l">Confirmed</div></div>
   <div class="stat-card amber"><div class="n">${unconfirmed.length}</div><div class="l">Unconfirmed</div></div>
-  <div class="stat-card red"><div class="n">${loops.length}</div><div class="l">Loop warnings</div></div>
+  <div class="stat-card red"><div class="n">${loops.length + chains.length}</div><div class="l">Warnings</div></div>
   <div class="stat-card amber"><div class="n">${type302.length}</div><div class="l">302 (temporary)</div></div>
 </div>
 
@@ -1605,6 +1686,13 @@ ${loops.length > 0 ? `
   <thead><tr><th></th><th>Old URL</th><th>Destination</th><th>Chain</th></tr></thead>
   <tbody>${loopRows}</tbody>
 </table>` : '<h2>Loop Warnings</h2><div class="empty">✨ No loops detected.</div>'}
+
+${chains.length > 0 ? `
+<h2>🔗 Redirect Chains (${chains.length})</h2>
+<table>
+  <thead><tr><th>Hops</th><th>Chain</th><th>Suggested fix</th></tr></thead>
+  <tbody>${chains.map(c => `<tr class="warn-row"><td style="color:#a07010;font-weight:600;">${c.chain.length}</td><td>${c.chain.concat(c.destination).map(u => esc(u)).join(' → ')}</td><td style="color:#2a8a48;">${esc(c.chain[0])} → ${esc(c.destination)}</td></tr>`).join('')}</tbody>
+</table>` : '<h2>Redirect Chains</h2><div class="empty">✨ No chains detected.</div>'}
 
 ${unconfirmed.length > 0 ? `
 <h2>Unconfirmed Redirects (${unconfirmed.length})</h2>
@@ -1912,17 +2000,20 @@ function renderHopperResults(chains) {
   const results = document.getElementById('hopper-results');
   const summary = document.getElementById('hopper-summary');
   const rows = document.getElementById('hopper-rows');
+  const flattenBtn = document.getElementById('btn-flatten-chains');
   results.classList.remove('hidden');
   rows.innerHTML = '';
 
   if (chains.length === 0) {
     summary.textContent = '✓ No chains detected — all redirects resolve in a single hop.';
     summary.style.color = 'var(--tag-ok-text)';
+    if (flattenBtn) flattenBtn.classList.add('hidden');
     return;
   }
 
   summary.textContent = `${chains.length} chain${chains.length!==1?'s':''} detected — consider flattening to improve performance.`;
   summary.style.color = 'var(--cors-text)';
+  if (flattenBtn) flattenBtn.classList.remove('hidden');
 
   chains.forEach(({ chain, destination }) => {
     const div = document.createElement('div');
@@ -1992,17 +2083,37 @@ function extractLinks(html, base) {
   return links;
 }
 
+const WAYPOINT_PROXY = 'https://waypointspider.libertyhphillips.workers.dev';
+
+function getProxyUrl() {
+  const isManual = document.getElementById('spider-proxy-manual')?.classList.contains('active');
+  if (isManual) {
+    return document.getElementById('spider-proxy')?.value.trim().replace(/\/$/, '') || WAYPOINT_PROXY;
+  }
+  return WAYPOINT_PROXY;
+}
+
 async function fetchPage(url) {
+  const proxyBase = getProxyUrl();
+
   try {
-    const res = await fetch(url, {
-      method: 'GET',
-      credentials: 'omit',
-      headers: { 'Accept': 'text/html,application/xhtml+xml' }
-    });
-    const text = res.headers.get('content-type')?.includes('text/html') ? await res.text() : '';
-    return { ok: res.ok, status: res.status, statusText: res.statusText || String(res.status), html: text };
+    const proxyUrl = `${proxyBase}?url=${encodeURIComponent(url)}`;
+    const res = await fetch(proxyUrl);
+    if (!res.ok) return { ok: false, status: res.status, statusText: String(res.status), html: '' };
+    const data = await res.json();
+    return { ok: data.ok, status: data.status, statusText: String(data.status), html: data.html || '' };
   } catch {
-    return { ok: null, status: null, statusText: 'blocked', html: '' };
+    // Proxy failed — fall back to direct fetch
+    try {
+      const res = await fetch(url, {
+        method: 'GET', credentials: 'omit',
+        headers: { 'Accept': 'text/html,application/xhtml+xml' }
+      });
+      const text = res.headers.get('content-type')?.includes('text/html') ? await res.text() : '';
+      return { ok: res.ok, status: res.status, statusText: String(res.status), html: text };
+    } catch {
+      return { ok: null, status: null, statusText: 'blocked', html: '' };
+    }
   }
 }
 
@@ -2011,11 +2122,78 @@ function renderSpiderRow(item) {
   div.className = 'spider-row';
   let badgeClass = 'spider-pend', badgeText = '…';
   if (item.statusText === 'blocked') { badgeClass = 'spider-blk'; badgeText = 'blocked'; }
+  else if (item.statusText === 'proxy-error') { badgeClass = 'spider-err'; badgeText = 'proxy error'; }
   else if (item.status === null) { badgeClass = 'spider-pend'; badgeText = '…'; }
   else if (item.ok) { badgeClass = 'spider-ok'; badgeText = String(item.status); }
   else { badgeClass = 'spider-err'; badgeText = String(item.status); }
   div.innerHTML = `<span class="spider-url">${esc(item.url)}</span><span class="spider-badge ${badgeClass}">${badgeText}</span>`;
   return div;
+}
+
+// Worker download helper
+const WORKER_CODE = `/**
+ * Waypoint Spider Proxy — Cloudflare Worker
+ * Deploy this to Cloudflare Workers to enable Spider crawling of external sites.
+ * Set ALLOWED_ORIGIN to your GitHub Pages URL before deploying.
+ */
+
+const ALLOWED_ORIGIN = 'https://elleiana.github.io';
+
+export default {
+  async fetch(request) {
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders(ALLOWED_ORIGIN) });
+    }
+    if (request.method !== 'GET') return new Response('Method not allowed', { status: 405 });
+    const origin = request.headers.get('Origin') || '';
+    if (!origin.startsWith(ALLOWED_ORIGIN)) return new Response('Forbidden', { status: 403 });
+    const { searchParams } = new URL(request.url);
+    const targetUrl = searchParams.get('url');
+    if (!targetUrl) return new Response('Missing ?url parameter', { status: 400 });
+    let parsed;
+    try {
+      parsed = new URL(targetUrl);
+      if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error();
+    } catch { return new Response('Invalid URL', { status: 400 }); }
+    let response;
+    try {
+      response = await fetch(targetUrl, {
+        method: 'GET',
+        headers: {
+          'User-Agent': 'Waypoint-Spider/1.0 (+https://elleiana.github.io/Waypoint)',
+          'Accept': 'text/html,application/xhtml+xml',
+        },
+        redirect: 'follow',
+      });
+    } catch (err) {
+      return new Response(JSON.stringify({ error: 'fetch_failed', message: String(err) }), {
+        status: 502,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders(ALLOWED_ORIGIN) },
+      });
+    }
+    const contentType = response.headers.get('content-type') || '';
+    const body = contentType.includes('text/html') ? await response.text() : '';
+    return new Response(JSON.stringify({ url: response.url, status: response.status, ok: response.ok, html: body }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(ALLOWED_ORIGIN) },
+    });
+  },
+};
+
+function corsHeaders(origin) {
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+}`;
+
+function downloadWorker() {
+  const blob = new Blob([WORKER_CODE], { type: 'text/javascript' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'waypoint-worker.js';
+  a.click();
 }
 
 function updateSpiderStats() {
@@ -2113,6 +2291,18 @@ function stopSpider() {
   document.getElementById('btn-spider-start').disabled = false;
   updateSpiderStats();
 }
+
+// Spider proxy mode toggle
+document.getElementById('spider-proxy-auto').addEventListener('click', () => {
+  document.getElementById('spider-proxy-auto').classList.add('active');
+  document.getElementById('spider-proxy-manual').classList.remove('active');
+  document.getElementById('spider-proxy').classList.add('hidden');
+});
+document.getElementById('spider-proxy-manual').addEventListener('click', () => {
+  document.getElementById('spider-proxy-manual').classList.add('active');
+  document.getElementById('spider-proxy-auto').classList.remove('active');
+  document.getElementById('spider-proxy').classList.remove('hidden');
+});
 
 document.getElementById('btn-spider-start').addEventListener('click', runSpider);
 document.getElementById('btn-spider-stop').addEventListener('click', stopSpider);
