@@ -359,7 +359,15 @@
     html.light .btn-accept-all:hover { background: #a8d8d8; }
 
     /* rows */
-    #rows-container { display: flex; flex-direction: column; gap: 0.35rem; }
+    #rows-container { display: flex; flex-direction: column; gap: 0.35rem; max-height: 620px; overflow-y: auto; scroll-behavior: smooth; padding-right: 0.25rem; }
+    #rows-container::-webkit-scrollbar { width: 6px; }
+    #rows-container::-webkit-scrollbar-track { background: transparent; }
+    #rows-container::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 3px; }
+
+    /* jump controls */
+    .jump-controls { display: none; justify-content: center; gap: 0.5rem; margin: 0.5rem 0; }
+    .jump-controls.visible { display: flex; }
+    .btn-jump { font-size: 0.67rem; }
     .row { display: flex; align-items: center; gap: 0.65rem; padding: 0.55rem 0.85rem; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 0.71rem; flex-wrap: wrap; }
     .row-unchanged { background: var(--row-unchanged-bg); border: 1px solid var(--row-unchanged-bd); }
     .row-redirect { background: var(--row-redirect-bg); border: 1px solid var(--row-redirect-bd); }
@@ -423,9 +431,39 @@
     .loop-row-chain { color:var(--cors-text); line-height:1.8; }
     .spider-progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #008080, #00a0a0); transition: width 0.3s ease; width: 0%; }
     @keyframes spiderPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    @keyframes webSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .spider-progress-fill.crawling { animation: spiderPulse 1.5s ease-in-out infinite; width: 100%; }
+    #spider-progress-emoji { display: inline-block; }
+    #spider-progress-emoji.spinning { animation: webSpin 2s linear infinite; }
 
-    /* spider workbench */
+    .pill-count { font-size: 0.6rem; opacity: 0.75; margin-left: 0.15rem; }
+    .pill.active .pill-count { opacity: 1; }
+
+    /* bulk toolbar */
+    .bulk-toolbar { display: flex; align-items: center; gap: 0.75rem; padding: 0.55rem 0.85rem; background: var(--bg-input); border: 1px solid #004d4d; border-radius: 4px; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    html.light .bulk-toolbar { border-color: #50a0a0; background: #c0e4e4; }
+    .bulk-count { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: #008080; font-weight: 600; white-space: nowrap; }
+    .bulk-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+    /* focused row highlight for keyboard nav */
+    .row-focused { outline: 2px solid #008080 !important; outline-offset: -2px; }
+    .row-selected { background: var(--bg-input) !important; border-color: #008080 !important; }
+
+    /* row checkbox */
+    .row-checkbox { width: 14px; height: 14px; accent-color: #008080; flex-shrink: 0; cursor: pointer; }
+    /* tracker */
+    .tracker-row { display: flex; align-items: center; gap: 0.75rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; }
+    .tracker-dir { color: var(--text-body); min-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+    .tracker-bar-wrap { flex: 1; height: 6px; background: var(--border-soft); border-radius: 99px; overflow: hidden; }
+    .tracker-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+    .tracker-pct { min-width: 36px; text-align: right; color: var(--text-muted); font-size: 0.67rem; }
+    .tracker-count { color: var(--text-dimmer); font-size: 0.65rem; white-space: nowrap; }
+
+    /* confidence slider */
+    .confidence-row { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
+    .confidence-slider { flex: 1; accent-color: #008080; height: 4px; cursor: pointer; }
+    .confidence-value { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; font-weight: 600; color: #008080; min-width: 3rem; }
+
     .spider-opt-row { display: flex; align-items: center; gap: 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.71rem; color: var(--text-body); cursor: pointer; }
     .spider-opt-row input[type="checkbox"] { accent-color: #008080; width: 13px; height: 13px; flex-shrink: 0; cursor: pointer; }
 
@@ -495,9 +533,9 @@
           <div class="session-btns">
             <button class="btn-session btn-undo" id="btn-undo" disabled title="Undo (Ctrl+Z)">↩ Undo</button>
             <button class="btn-session btn-redo" id="btn-redo" disabled title="Redo (Ctrl+Y)">↪ Redo</button>
-            <button class="btn-share" id="btn-share-session" title="Copy a shareable link to this session">⇪ Share</button>
             <button class="btn-session save" id="btn-save-session">↓ Save session</button>
             <label class="btn-session" id="btn-load-label" title="Load a previously saved session">↑ Load session<input type="file" id="btn-load-session" accept=".json" hidden /></label>
+            <button class="btn-share" id="btn-share-session" title="Copy a shareable link to this session">🔗 Share</button>
           </div>
         </div>
       </div>
@@ -549,6 +587,16 @@
       <div class="accordion-body" id="rules-accordion-body">
         <div class="card-body">
 
+          <!-- Confidence threshold -->
+          <div class="workbench-section-label">Suggestion Confidence</div>
+          <div class="workbench-section-help">Hide suggestions below this confidence threshold. Rows with no suggestion above the threshold will show only the manual input option.</div>
+          <div class="confidence-row">
+            <input type="range" id="confidence-threshold" min="0" max="99" value="50" step="1" class="confidence-slider" />
+            <span class="confidence-value"><input type="number" id="confidence-display" min="0" max="99" value="50" style="width:3rem;background:none;border:none;border-bottom:1px solid #008080;color:#008080;font-family:'IBM Plex Mono',monospace;font-size:0.75rem;font-weight:600;text-align:center;outline:none;padding:0;" />%</span>
+          </div>
+
+          <div class="workbench-divider"></div>
+
           <!-- Pattern Rules section -->
           <div class="workbench-section-label">Pattern Rules</div>
           <div class="workbench-section-help">Auto-confirm redirects matching a find-and-replace pattern. Applied in order, first match wins.</div>
@@ -594,6 +642,21 @@
       <span id="check-progress"></span>
     </div>
     <div id="check-results-container" style="margin-top:0.5rem;display:flex;flex-direction:column;gap:0.35rem;"></div>
+
+    <!-- Tracker card -->
+    <div class="section-card" style="margin-bottom:1rem;">
+      <div class="card-header">
+        <div class="card-header-text">
+          <div class="card-title">Tracker</div>
+          <div class="card-help">Coverage breakdown by directory — see how much of each section you've mapped so far.</div>
+        </div>
+        <button class="btn-check" id="btn-run-tracker">Check coverage</button>
+      </div>
+      <div id="tracker-results" class="hidden" style="padding:1rem;">
+        <div id="tracker-summary" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:1rem;"></div>
+        <div id="tracker-rows" style="display:flex;flex-direction:column;gap:0.5rem;"></div>
+      </div>
+    </div>
 
     <!-- Loop checker card -->
     <div class="section-card" style="margin-top:1rem;">
@@ -665,11 +728,6 @@
             <input class="base-url-input" id="spider-url" type="url" placeholder="https://example.com" />
           </div>
           <div class="check-divider"></div>
-          <div class="base-url-wrap" style="max-width:120px;flex:0 0 auto;">
-            <label class="base-url-label" for="spider-concurrency">Concurrency</label>
-            <input class="base-url-input" id="spider-concurrency" type="number" min="1" max="10" value="3" />
-          </div>
-          <div class="check-divider"></div>
           <button class="btn-check" id="btn-spider-start">Crawl site</button>
           <button class="btn-check hidden" id="btn-spider-stop" style="background:#c86a5a;">Stop</button>
         </div>
@@ -732,7 +790,16 @@
       </div>
       <div class="accordion-body" id="spider-wb-body">
         <div class="card-body">
-          <div class="workbench-section-label" style="margin-bottom:0.5rem;">Exclude from crawl</div>
+          <div style="margin-bottom:1rem;">
+            <div class="workbench-section-label" style="margin-bottom:0.3rem;">Concurrency</div>
+            <div class="workbench-section-help" style="margin-bottom:0.5rem;">How many pages to fetch simultaneously. Higher values crawl faster but are more likely to trigger rate limiting on the target site. 3 is a safe default for most sites.</div>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <input class="base-url-input" id="spider-concurrency" type="number" min="1" max="10" value="3" style="width:70px;flex:0 0 auto;" />
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:0.68rem;color:var(--text-muted);">1 = careful &nbsp;·&nbsp; 5 = fast &nbsp;·&nbsp; 10 = aggressive</span>
+            </div>
+          </div>
+          <div class="workbench-divider"></div>
+          <div class="workbench-section-label" style="margin-bottom:0.5rem;margin-top:0.85rem;">Exclude from crawl</div>
           <div style="display:flex;flex-direction:column;gap:0.5rem;">
             <label class="spider-opt-row"><input type="checkbox" id="spider-excl-pagination" checked /> <span>Pagination <span class="rule-preview">?page=, /page/, /p/</span></span></label>
             <label class="spider-opt-row"><input type="checkbox" id="spider-excl-assets" checked /> <span>Static assets <span class="rule-preview">.css, .js, .png, .jpg, .gif, .svg, .ico, .woff, .pdf</span></span></label>
@@ -751,7 +818,7 @@
 
     <!-- Spider results -->
     <div id="spider-results" class="hidden" style="margin-top:1rem;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.85rem;flex-wrap:wrap;gap:0.5rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem;">
         <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
           <div class="stat"><strong id="spider-stat-total" style="color:#008080">0</strong> discovered</div>
           <div class="stat"><strong id="spider-stat-ok" style="color:#5aab72">0</strong> ok</div>
@@ -762,6 +829,19 @@
           <button class="btn-session" id="btn-spider-use-old" title="Send to existing site URL list">→ use as existing site URLs</button>
           <button class="btn-session" id="btn-spider-use-new" title="Send to new site URL list">→ use as new site URLs</button>
           <button class="btn-session save" id="btn-spider-export">↓ export CSV</button>
+        </div>
+      </div>
+
+      <!-- Exclusion summary accordion -->
+      <div id="spider-exclusion-summary" class="hidden" style="margin-bottom:0.85rem;">
+        <div style="border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;">
+          <button id="spider-excl-summary-toggle" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.85rem;background:var(--bg-input);border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--text-muted);text-align:left;" onclick="document.getElementById('spider-excl-summary-body').classList.toggle('hidden');this.querySelector('.excl-arrow').textContent=document.getElementById('spider-excl-summary-body').classList.contains('hidden')?'▶':'▼';">
+            <span id="spider-excl-summary-label">0 URLs excluded by Workbench filters</span>
+            <span class="excl-arrow" style="font-size:0.6rem;">▶</span>
+          </button>
+          <div id="spider-excl-summary-body" class="hidden" style="padding:0.75rem 0.85rem;display:flex;flex-direction:column;gap:0.5rem;">
+            <div id="spider-excl-summary-rows"></div>
+          </div>
         </div>
       </div>
       <!-- Filter pills + search -->
@@ -912,16 +992,35 @@
       <div id="tab-map">
         <div class="filters">
           <span class="filter-label">show:</span>
-          <button class="pill active" data-filter="all">all</button>
-          <button class="pill" data-filter="unchanged">unchanged</button>
-          <button class="pill" data-filter="unconfirmed">unconfirmed</button>
-          <button class="pill" data-filter="confirmed">confirmed</button>
+          <button class="pill active" data-filter="all">all <span class="pill-count" id="pill-count-all"></span></button>
+          <button class="pill" data-filter="unchanged">unchanged <span class="pill-count" id="pill-count-unchanged"></span></button>
+          <button class="pill" data-filter="unconfirmed">unconfirmed <span class="pill-count" id="pill-count-unconfirmed"></span></button>
+          <button class="pill" data-filter="confirmed">confirmed <span class="pill-count" id="pill-count-confirmed"></span></button>
           <div class="search-wrap">
             <input class="search-input" id="search-input" type="text" placeholder="search URLs…" autocomplete="off" spellcheck="false" />
             <button class="search-clear hidden" id="search-clear" title="Clear search">✕</button>
           </div>
           <button class="btn-accept-all" id="btn-accept-all">accept all suggestions</button>
         </div>
+
+        <!-- Jump controls -->
+        <div class="jump-controls" id="jump-controls">
+          <button class="btn-session btn-jump" id="btn-jump-prev" title="Previous unconfirmed redirect">↑ prev unconfirmed</button>
+          <button class="btn-session btn-jump" id="btn-jump-next" title="Next unconfirmed redirect">↓ next unconfirmed</button>
+        </div>
+
+        <!-- Bulk action toolbar (hidden until rows are selected) -->
+        <div class="bulk-toolbar hidden" id="bulk-toolbar">
+          <span class="bulk-count" id="bulk-count">0 selected</span>
+          <div class="bulk-actions">
+            <button class="btn-session" id="bulk-confirm">✓ confirm suggestions</button>
+            <button class="btn-session" id="bulk-clear">✕ clear</button>
+            <button class="btn-session" id="bulk-301">→ set 301</button>
+            <button class="btn-session" id="bulk-302">→ set 302</button>
+            <button class="btn-session" id="bulk-deselect">deselect all</button>
+          </div>
+        </div>
+
         <div id="rows-container"></div>
         <div class="accept-all-row hidden" id="accept-all-row"></div>
       </div>
@@ -958,8 +1057,34 @@
 <footer class="waypoint-footer">
   <span>🐯</span>
   <span class="footer-divider">//</span>
+  <a href="#" class="footer-link" onclick="document.getElementById('modal-help').classList.remove('hidden');return false;">what is Waypoint?</a>
+  <span class="footer-divider">//</span>
   <a href="#" class="footer-link" onclick="document.getElementById('modal-boring').classList.remove('hidden');return false;">boring stuff</a>
 </footer>
+
+<!-- Help modal -->
+<div id="modal-help" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">What is Waypoint?</span>
+      <button class="modal-close" onclick="document.getElementById('modal-help').classList.add('hidden')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-text"><strong style="color:var(--text-title);">Waypoint is a site migration toolkit.</strong></p>
+      <p class="modal-text" style="margin-top:0.5rem;">It helps you plan, map, and validate URL redirects when a website moves, relaunches, or restructures. No installs, no spreadsheets. Everything runs in the browser.</p>
+
+      <div class="modal-section-title" style="margin-top:0.85rem;">The workflow</div>
+      <p class="modal-text" style="margin-top:0.4rem;"><strong style="color:var(--text-title);">🗺️ Mapper</strong> — Cross-reference old and new URLs, confirm redirect destinations, and manage your full migration map.</p>
+      <p class="modal-text" style="margin-top:0.4rem;"><strong style="color:var(--text-title);">🧪 Analysis</strong> — Checks the logic of your redirect map. Shows coverage by directory, catches circular redirects and unnecessary chains, and flags destinations with multiple sources.</p>
+      <p class="modal-text" style="margin-top:0.4rem;"><strong style="color:var(--text-title);">🕷️ Spider</strong> — Crawls a website to pull all its URLs, and sends the results straight to the Mapper.</p>
+      <p class="modal-text" style="margin-top:0.4rem;"><strong style="color:var(--text-title);">📊 Validator</strong> — Final QA pass. Checks for issues, generates a shareable report, and exports your redirect map in your chosen format.</p>
+
+      <div style="margin-top:1.25rem;">
+        <a href="https://github.com/elleiana/Waypoint" target="_blank" class="modal-link">→ Full guide on GitHub</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Disclaimer modal -->
 <div id="modal-boring" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
@@ -997,7 +1122,9 @@ let state = {
   page: 'mapper',
   rules: [],
   exportFormat: 'csv',
+  selectedRows: new Set(),
 };
+let focusedRowIndex = -1;
 
 // ── Undo / Redo ────────────────────────────────────────────────────────────────
 const history = { stack: [], cursor: -1, MAX: 50 };
@@ -1037,7 +1164,10 @@ function updateUndoButtons() {
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
   if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); redo(); }
-  if (e.key === 'Escape') { document.getElementById('modal-boring')?.classList.add('hidden'); }
+  if (e.key === 'Escape') {
+    document.getElementById('modal-boring')?.classList.add('hidden');
+    document.getElementById('modal-help')?.classList.add('hidden');
+  }
 });
 
 // ── Theme toggle ───────────────────────────────────────────────────────────────
@@ -1082,21 +1212,34 @@ function parseCsv(raw) {
   return [...new Set(urls)];
 }
 
+// Normalise a URL slug: ensure leading slash, strip trailing slash (except root)
+function normalisePath(u) {
+  if (!u) return u;
+  u = u.trim();
+  // If it looks like a full URL, extract the pathname
+  try { u = new URL(u).pathname; } catch {}
+  // Ensure leading slash
+  if (!u.startsWith('/')) u = '/' + u;
+  // Strip trailing slash unless it's just "/"
+  if (u.length > 1) u = u.replace(/\/+$/, '');
+  return u;
+}
+
 function parseUrls(raw) {
   raw = raw.trim();
   if (raw.startsWith('<')) {
     return [...new Set([...raw.matchAll(/<loc>(.*?)<\/loc>/g)].map(m => {
-      try { return new URL(m[1].trim()).pathname; } catch { return m[1].trim(); }
+      try { return normalisePath(new URL(m[1].trim()).pathname); } catch { return normalisePath(m[1].trim()); }
     }))];
   }
   // Detect CSV: has commas and a likely header row
   const firstLine = raw.split(/\r?\n/)[0];
   if (firstLine.includes(',') && raw.split(/\r?\n/).length > 1) {
     const parsed = parseCsv(raw);
-    if (parsed.length > 0) return parsed;
+    if (parsed.length > 0) return parsed.map(normalisePath);
   }
   return [...new Set(raw.split(/[\n,]+/).map(u => u.trim()).filter(Boolean).map(u => {
-    try { return new URL(u).pathname; } catch { return u; }
+    try { return normalisePath(new URL(u).pathname); } catch { return normalisePath(u); }
   }))];
 }
 
@@ -1208,20 +1351,19 @@ function parseImport(raw) {
   lines.forEach(line => {
     // Apache: Redirect 301 /old /new  OR  Redirect /old /new
     let m = line.match(/^Redirect(?:\s+\d{3})?\s+(\S+)\s+(\S+)/i);
-    if (m) { results.push({ from: m[1], to: m[2] }); return; }
+    if (m) { results.push({ from: normalisePath(m[1]), to: normalisePath(m[2]) }); return; }
 
     // Nginx: rewrite ^/old$ /new permanent;  OR  rewrite ^/old /new last;
     m = line.match(/^rewrite\s+\^?(\S+?)\$?\s+(\S+)\s+/i);
-    if (m) { results.push({ from: m[1], to: m[2] }); return; }
+    if (m) { results.push({ from: normalisePath(m[1]), to: normalisePath(m[2]) }); return; }
 
     // CSV: "old","new"  OR  old,new
     const cols = line.match(/(".*?"|[^,]+)/g);
     if (cols && cols.length >= 2) {
-      const from = cols[0].replace(/^"|"$/g,'').trim();
-      const to   = cols[1].replace(/^"|"$/g,'').trim();
+      const from = normalisePath(cols[0].replace(/^"|"$/g,'').trim());
+      const to   = normalisePath(cols[1].replace(/^"|"$/g,'').trim());
       if (from && to && from !== 'old url' && from.toLowerCase() !== 'old') {
-        try { results.push({ from: new URL(from).pathname, to: new URL(to).pathname }); return; } catch {}
-        if (from.startsWith('/')) { results.push({ from, to }); return; }
+        results.push({ from, to }); return;
       }
     }
   });
@@ -1232,8 +1374,9 @@ function parseImport(raw) {
 function applyImport(pairs) {
   let applied = 0, skipped = 0;
   pairs.forEach(({ from, to }) => {
-    const row = state.rows.find(r => r.old === from && r.status === 'redirect');
-    if (row) { row.confirmed = to; applied++; }
+    const normFrom = normalisePath(from);
+    const row = state.rows.find(r => normalisePath(r.old) === normFrom && r.status === 'redirect');
+    if (row) { row.confirmed = normalisePath(to); applied++; }
     else skipped++;
   });
   return { applied, skipped };
@@ -1497,10 +1640,26 @@ function render() {
   const unchanged = state.rows.filter(r => r.status==='unchanged');
   const redirects  = state.rows.filter(r => r.status==='redirect');
   const confirmed  = state.rows.filter(r => r.confirmed);
+  const unconfirmed = state.rows.filter(r => r.status==='redirect' && !r.confirmed);
 
   document.getElementById('stat-unchanged').textContent = unchanged.length;
   document.getElementById('stat-redirects').textContent = redirects.length;
   document.getElementById('stat-confirmed').textContent = confirmed.length;
+
+  // Pill counts
+  const pq = state.search.toLowerCase();
+  const filteredAll        = state.rows.filter(r => !pq || r.old.toLowerCase().includes(pq) || (r.confirmed||'').toLowerCase().includes(pq) || (r.suggestion||'').toLowerCase().includes(pq));
+  const filteredUnchanged  = filteredAll.filter(r => r.status==='unchanged');
+  const filteredUnconfirmed= filteredAll.filter(r => r.status==='redirect' && !r.confirmed);
+  const filteredConfirmed  = filteredAll.filter(r => !!r.confirmed);
+  document.getElementById('pill-count-all').textContent        = filteredAll.length || '';
+  document.getElementById('pill-count-unchanged').textContent  = filteredUnchanged.length || '';
+  document.getElementById('pill-count-unconfirmed').textContent= filteredUnconfirmed.length || '';
+  document.getElementById('pill-count-confirmed').textContent  = filteredConfirmed.length || '';
+
+  // Jump controls — show when there are unconfirmed rows
+  const jumpControls = document.getElementById('jump-controls');
+  if (jumpControls) jumpControls.classList.toggle('visible', unconfirmed.length > 0);
 
   const pct = redirects.length > 0 ? Math.round((confirmed.length / redirects.length) * 100) : 0;
   document.getElementById('progress-bar-fill').style.width = pct + '%';
@@ -1624,7 +1783,16 @@ function renderRows(rows) {
   const container = document.getElementById('rows-container');
   if (!rows.length) { container.innerHTML = '<div class="empty">no URLs match this filter</div>'; return; }
   container.innerHTML = '';
-  rows.forEach(row => container.appendChild(makeRow(row)));
+  rows.forEach((row, i) => {
+    const el = makeRow(row);
+    el.dataset.index = i;
+    el.dataset.old = row.old;
+    el.setAttribute('tabindex', '0');
+    if (i === focusedRowIndex) el.classList.add('row-focused');
+    container.appendChild(el);
+  });
+  // Store displayed rows for keyboard nav
+  container._displayedRows = rows;
 }
 
 function makeRow(row) {
@@ -1698,7 +1866,7 @@ function makeRow(row) {
       if (!val) return;
       snapshot();
       const r = state.rows.find(r => r.old === o);
-      r.override = val;
+      r.override = normalisePath(val);
       render();
     });
 
@@ -1722,10 +1890,16 @@ function makeRow(row) {
 
     return div;
   }
-  div.className = `row row-redirect${row.confirmed?' row-confirmed':''}`;
-  const suggBtn = row.suggestion
+  div.className = `row row-redirect${row.confirmed?' row-confirmed':''}${state.selectedRows.has(row.old)?' row-selected':''}`;
+  const isSelected = state.selectedRows.has(row.old);
+  const checkbox = `<input type="checkbox" class="row-checkbox" data-old="${esc(row.old)}" ${isSelected?'checked':''} title="Select row" />`;
+  const threshold = (parseInt(document.getElementById('confidence-threshold')?.value || '50', 10)) / 100;
+  const suggAboveThreshold = row.suggestion && row.score >= threshold;
+  const suggBtn = suggAboveThreshold
     ? `<button class="btn-suggestion${row.confirmed===row.suggestion?' accepted':''}" data-old="${esc(row.old)}" data-val="${esc(row.suggestion)}">${esc(row.suggestion)}<span class="score">${Math.round(row.score*100)}%</span></button>`
-    : `<span class="no-match">no match found</span>`;
+    : (row.suggestion && row.score < threshold
+        ? `<span class="no-match" title="Best match was ${Math.round(row.score*100)}% — below threshold">no match above ${Math.round(threshold*100)}%</span>`
+        : `<span class="no-match">no match found</span>`);
   const customTag = (row.confirmed && row.confirmed!==row.suggestion) ? `<span class="custom-tag">custom: ${esc(row.confirmed)}</span>` : '';
   const loopBadge = row.loopChain
     ? `<span class="loop-badge" title="Loop detected: ${esc(row.loopChain)}">⚠️</span>`
@@ -1735,7 +1909,15 @@ function makeRow(row) {
   const typeBtn = row.confirmed ? `<button class="btn-type${row.redirectType===302?' is-302':''}" data-old="${esc(row.old)}" title="Click to toggle redirect type">${row.redirectType||301}</button>` : '';
   const suggArea = `<div class="suggestion-area" id="sug-${cssId(row.old)}">${suggBtn}<button class="btn-edit" data-old="${esc(row.old)}" title="Edit">✎</button>${customTag}${loopBadge}${typeBtn}</div>`;
   const editArea = `<div class="edit-area hidden" id="edit-${cssId(row.old)}"><input class="edit-input" list="cands-${cssId(row.old)}" value="${esc(row.confirmed||row.suggestion||'')}" data-old="${esc(row.old)}" /><datalist id="cands-${cssId(row.old)}">${(row.candidates||[]).map(c=>`<option value="${esc(c.url)}">`).join('')}</datalist><button class="btn-sm btn-ok" data-old="${esc(row.old)}">✓</button><button class="btn-sm btn-cancel" data-old="${esc(row.old)}">✕</button></div>`;
-  div.innerHTML = `<span class="url-old" title="${esc(row.old)}">${esc(row.old)}</span><span class="arrow">→</span>` + suggArea + editArea;
+  div.innerHTML = `${checkbox}<span class="url-old" title="${esc(row.old)}">${esc(row.old)}</span><span class="arrow">→</span>` + suggArea + editArea;
+
+  div.querySelector('.row-checkbox')?.addEventListener('change', e => {
+    const o = e.currentTarget.dataset.old;
+    if (e.currentTarget.checked) state.selectedRows.add(o);
+    else state.selectedRows.delete(o);
+    updateBulkToolbar();
+    div.classList.toggle('row-selected', e.currentTarget.checked);
+  });
 
   div.querySelector('.btn-type')?.addEventListener('click', e => {
     e.stopPropagation();
@@ -1761,7 +1943,7 @@ function makeRow(row) {
     const o = e.currentTarget.dataset.old;
     const val = document.getElementById(`edit-${cssId(o)}`).querySelector('input').value.trim();
     snapshot();
-    const r = state.rows.find(r=>r.old===o); r.confirmed = val||null; render();
+    const r = state.rows.find(r=>r.old===o); r.confirmed = val ? normalisePath(val) : null; render();
   });
   div.querySelector('.btn-cancel')?.addEventListener('click', e => {
     const o = e.currentTarget.dataset.old;
@@ -1789,6 +1971,18 @@ function updateCheckBtn() {
 }
 
 ['old-input','new-input'].forEach(id => document.getElementById(id).addEventListener('input', checkAnalyseBtn));
+
+// Confidence threshold — slider and number input stay in sync
+document.getElementById('confidence-threshold').addEventListener('input', e => {
+  document.getElementById('confidence-display').value = e.target.value;
+  if (state.rows.length) render();
+});
+document.getElementById('confidence-display').addEventListener('input', e => {
+  let val = Math.min(99, Math.max(0, parseInt(e.target.value, 10) || 0));
+  e.target.value = val;
+  document.getElementById('confidence-threshold').value = val;
+  if (state.rows.length) render();
+});
 ['old-base','new-base'].forEach(id => document.getElementById(id).addEventListener('input', updateCheckBtn));
 
 // Search
@@ -1831,6 +2025,9 @@ document.getElementById('btn-analyse').addEventListener('click', () => {
   const newUrls = parseUrls(document.getElementById('new-input').value);
   if (!oldUrls.length || !newUrls.length) return;
   state.rows = runAnalysis(oldUrls, newUrls);
+  state.selectedRows.clear();
+  focusedRowIndex = -1;
+  updateBulkToolbar();
   state.tab = 'map'; state.filter = 'all'; state.search = '';
   // Reset history for fresh analysis
   history.stack = []; history.cursor = -1;
@@ -2453,7 +2650,67 @@ document.getElementById('btn-analyse').addEventListener('click', () => {
   setTimeout(saveToHistory, 600);
 }, true);
 
-// ── Loop detection ─────────────────────────────────────────────────────────────
+// ── Tracker (coverage by directory) ───────────────────────────────────────────
+function runTracker() {
+  const redirectRows = state.rows.filter(r => r.status === 'redirect');
+  if (!redirectRows.length) {
+    document.getElementById('tracker-results').classList.remove('hidden');
+    document.getElementById('tracker-summary').textContent = 'No redirects to analyse yet — add URLs on the Mapper first.';
+    document.getElementById('tracker-rows').innerHTML = '';
+    return;
+  }
+
+  // Group by top-level directory segment
+  const dirs = {};
+  redirectRows.forEach(r => {
+    const parts = r.old.split('/').filter(Boolean);
+    const dir = parts.length > 0 ? '/' + parts[0] + '/' : '/';
+    if (!dirs[dir]) dirs[dir] = { total: 0, confirmed: 0 };
+    dirs[dir].total++;
+    if (r.confirmed) dirs[dir].confirmed++;
+  });
+
+  // Also track root-level (no subdirectory)
+  const totalConfirmed = redirectRows.filter(r => r.confirmed).length;
+  const totalAll = redirectRows.length;
+  const overallPct = totalAll > 0 ? Math.round((totalConfirmed / totalAll) * 100) : 0;
+
+  const resultsEl  = document.getElementById('tracker-results');
+  const summaryEl  = document.getElementById('tracker-summary');
+  const rowsEl     = document.getElementById('tracker-rows');
+  resultsEl.classList.remove('hidden');
+  rowsEl.innerHTML = '';
+
+  // Overall summary with a little encouragement
+  const encouragement =
+    overallPct === 100 ? '🎉 Complete! Every redirect is mapped.' :
+    overallPct >= 75   ? `✨ Looking great — ${overallPct}% mapped overall. Nearly there!` :
+    overallPct >= 50   ? `💪 Good progress — ${overallPct}% mapped overall. Keep going!` :
+    overallPct >= 25   ? `🗺️ ${overallPct}% mapped overall. You're making headway.` :
+                         `🌱 Just getting started — ${overallPct}% mapped overall.`;
+  summaryEl.textContent = encouragement;
+
+  // Sort directories by total descending
+  const sorted = Object.entries(dirs).sort((a, b) => b[1].total - a[1].total);
+
+  sorted.forEach(([dir, { total, confirmed }]) => {
+    const pct = Math.round((confirmed / total) * 100);
+    const colour = pct === 100 ? '#5aab72' : pct >= 50 ? '#008080' : pct > 0 ? '#e8a45a' : '#c86a5a';
+
+    const row = document.createElement('div');
+    row.className = 'tracker-row';
+    row.innerHTML = `
+      <span class="tracker-dir" title="${esc(dir)}">${esc(dir)}</span>
+      <div class="tracker-bar-wrap">
+        <div class="tracker-bar-fill" style="width:${pct}%;background:${colour};"></div>
+      </div>
+      <span class="tracker-pct" style="color:${colour};">${pct}%</span>
+      <span class="tracker-count">${confirmed}/${total}</span>`;
+    rowsEl.appendChild(row);
+  });
+}
+
+document.getElementById('btn-run-tracker').addEventListener('click', runTracker);
 function detectLoops() {
   // Build a map of old → confirmed
   const redirectMap = {};
@@ -2518,6 +2775,143 @@ function renderLoopResults(loops) {
   });
 }
 
+// ── Bulk select toolbar ────────────────────────────────────────────────────────
+function updateBulkToolbar() {
+  const n = state.selectedRows.size;
+  const toolbar = document.getElementById('bulk-toolbar');
+  const countEl = document.getElementById('bulk-count');
+  toolbar.classList.toggle('hidden', n === 0);
+  countEl.textContent = `${n} selected`;
+}
+
+document.getElementById('bulk-confirm').addEventListener('click', () => {
+  snapshot();
+  state.rows.forEach(r => {
+    if (state.selectedRows.has(r.old) && r.status === 'redirect' && !r.confirmed && r.suggestion) {
+      r.confirmed = r.suggestion;
+    }
+  });
+  state.selectedRows.clear();
+  updateBulkToolbar();
+  render();
+});
+
+document.getElementById('bulk-clear').addEventListener('click', () => {
+  snapshot();
+  state.rows.forEach(r => {
+    if (state.selectedRows.has(r.old) && r.status === 'redirect') r.confirmed = null;
+  });
+  state.selectedRows.clear();
+  updateBulkToolbar();
+  render();
+});
+
+document.getElementById('bulk-301').addEventListener('click', () => {
+  snapshot();
+  state.rows.forEach(r => {
+    if (state.selectedRows.has(r.old) && r.status === 'redirect') r.redirectType = 301;
+  });
+  state.selectedRows.clear();
+  updateBulkToolbar();
+  render();
+});
+
+document.getElementById('bulk-302').addEventListener('click', () => {
+  snapshot();
+  state.rows.forEach(r => {
+    if (state.selectedRows.has(r.old) && r.status === 'redirect') r.redirectType = 302;
+  });
+  state.selectedRows.clear();
+  updateBulkToolbar();
+  render();
+});
+
+document.getElementById('bulk-deselect').addEventListener('click', () => {
+  state.selectedRows.clear();
+  updateBulkToolbar();
+  render();
+});
+
+// ── Jump to prev/next unconfirmed ─────────────────────────────────────────────
+function jumpToUnconfirmed(direction) {
+  const container = document.getElementById('rows-container');
+  const rows = container._displayedRows || [];
+  const unconfirmedIndices = rows
+    .map((r, i) => ({ r, i }))
+    .filter(({ r }) => r.status === 'redirect' && !r.confirmed)
+    .map(({ i }) => i);
+  if (!unconfirmedIndices.length) return;
+
+  let target;
+  if (direction === 'next') {
+    target = unconfirmedIndices.find(i => i > focusedRowIndex) ?? unconfirmedIndices[0];
+  } else {
+    const prev = [...unconfirmedIndices].reverse().find(i => i < focusedRowIndex);
+    target = prev ?? unconfirmedIndices[unconfirmedIndices.length - 1];
+  }
+
+  focusedRowIndex = target;
+  const el = container.querySelector(`[data-index="${target}"]`);
+  if (el) { el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  render();
+}
+
+document.getElementById('btn-jump-next').addEventListener('click', () => jumpToUnconfirmed('next'));
+document.getElementById('btn-jump-prev').addEventListener('click', () => jumpToUnconfirmed('prev'));
+
+// ── Keyboard shortcuts ─────────────────────────────────────────────────────────
+document.getElementById('rows-container').addEventListener('keydown', e => {
+  // Only fire if a row is focused (not an input inside it)
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+  if (state.page !== 'mapper') return;
+
+  const container = document.getElementById('rows-container');
+  const rows = container._displayedRows || [];
+  if (!rows.length) return;
+
+  const move = delta => {
+    focusedRowIndex = Math.max(0, Math.min(rows.length - 1, focusedRowIndex + delta));
+    const el = container.querySelector(`[data-index="${focusedRowIndex}"]`);
+    if (el) { el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+    render();
+  };
+
+  if (e.key === 'ArrowDown' || e.key === 'j') { e.preventDefault(); move(1); }
+  if (e.key === 'ArrowUp'   || e.key === 'k') { e.preventDefault(); move(-1); }
+
+  const row = rows[focusedRowIndex];
+  if (!row || row.status !== 'redirect') return;
+
+  if (e.key === 'y' || e.key === 'Y') {
+    if (row.suggestion && !row.confirmed) {
+      snapshot(); row.confirmed = row.suggestion; render();
+    }
+  }
+  if (e.key === 'e' || e.key === 'E') {
+    e.preventDefault();
+    // Trigger edit on focused row
+    const editBtn = container.querySelector(`[data-index="${focusedRowIndex}"] .btn-edit`);
+    editBtn?.click();
+  }
+  if (e.key === 'Backspace' || e.key === 'Delete') {
+    if (row.confirmed) { snapshot(); row.confirmed = null; render(); }
+  }
+  if (e.key === 'x' || e.key === 'X') {
+    // Toggle selection
+    if (state.selectedRows.has(row.old)) state.selectedRows.delete(row.old);
+    else state.selectedRows.add(row.old);
+    updateBulkToolbar();
+    render();
+    move(1);
+  }
+});
+
+// Set focusedRowIndex when clicking a row
+document.getElementById('rows-container').addEventListener('focusin', e => {
+  const rowEl = e.target.closest('[data-index]');
+  if (rowEl) focusedRowIndex = parseInt(rowEl.dataset.index, 10);
+});
+
 document.getElementById('btn-check-loops').addEventListener('click', () => {
   const loops = detectLoops();
   renderLoopResults(loops);
@@ -2525,6 +2919,7 @@ document.getElementById('btn-check-loops').addEventListener('click', () => {
 });
 
 document.getElementById('btn-run-all-analysis').addEventListener('click', () => {
+  runTracker();
   renderLoopResults(detectLoops());
   renderHopperResults(detectChains());
   renderMergerResults(detectMergers());
@@ -2669,8 +3064,16 @@ let spiderState = {
   running: false,
   queue: [],
   visited: new Set(),
-  results: [], // { url, status, statusText }
+  results: [],
   base: '',
+  excluded: {
+    pagination: [],
+    assets: {},    // extension → [urls]
+    dev: [],
+    query: [],
+    hash: [],
+    custom: {},    // pattern → [urls]
+  },
 };
 
 function spiderOrigin(url) {
@@ -2833,7 +3236,8 @@ function updateSpiderStats() {
   if (spiderState.running) {
     statusEl.textContent = `crawling… ${total} found`;
     fill.classList.add('crawling');
-    emojiEl.textContent = total % 2 === 0 ? '🕷️' : '🕸️';
+    emojiEl.textContent = '🕸️';
+    emojiEl.classList.add('spinning');
     depthEl.textContent = `${total} crawled`;
     queueEl.textContent = `${queued} queued`;
   } else if (total > 0) {
@@ -2841,6 +3245,7 @@ function updateSpiderStats() {
     fill.classList.remove('crawling');
     fill.style.width = '100%';
     emojiEl.textContent = '✅';
+    emojiEl.classList.remove('spinning');
     depthEl.textContent = `${ok} ok · ${err} errors · ${blocked} blocked`;
     queueEl.textContent = '';
   }
@@ -2862,9 +3267,17 @@ async function runSpider() {
   document.getElementById('spider-search-clear').classList.add('hidden');
   document.querySelectorAll('[data-spider-filter]').forEach(b => b.classList.toggle('active', b.dataset.spiderFilter === 'all'));
 
-  spiderState = { running: true, queue: [normaliseUrl(startUrl, startUrl)], visited: new Set(), results: [], base: origin };
+  spiderState = {
+    running: true,
+    queue: [normaliseUrl(startUrl, startUrl)],
+    visited: new Set(),
+    results: [],
+    base: origin,
+    excluded: { pagination: [], assets: {}, dev: [], query: [], hash: [], custom: {} },
+  };
   document.getElementById('spider-results').classList.remove('hidden');
   document.getElementById('spider-rows').innerHTML = '';
+  document.getElementById('spider-exclusion-summary').classList.add('hidden');
   document.getElementById('spider-progress-wrap').classList.remove('hidden');
   document.getElementById('spider-progress-fill').style.width = '0%';
   document.getElementById('spider-progress-fill').classList.add('crawling');
@@ -2877,7 +3290,7 @@ async function runSpider() {
     while (spiderState.running && spiderState.queue.length > 0) {
       const url = spiderState.queue.shift();
       if (!url || spiderState.visited.has(url)) continue;
-      if (shouldExcludeUrl(url)) { spiderState.visited.add(url); continue; }
+      if (shouldExcludeUrl(url, true)) { spiderState.visited.add(url); continue; }
       spiderState.visited.add(url);
 
       const item = { url, ok: null, status: null, statusText: '…' };
@@ -2911,6 +3324,7 @@ async function runSpider() {
   document.getElementById('btn-spider-start').disabled = false;
   document.getElementById('btn-spider-stop').classList.add('hidden');
   updateSpiderStats();
+  renderExclusionSummary();
 
   // Show CORS notice if everything was blocked
   const allBlocked = spiderState.results.length > 0 &&
@@ -2928,13 +3342,57 @@ async function runSpider() {
   }
 }
 
+function renderExclusionSummary() {
+  const ex = spiderState.excluded;
+  const rows = [];
+
+  const totalAssets = Object.values(ex.assets).reduce((s, a) => s + a.length, 0);
+  const totalCustom = Object.values(ex.custom).reduce((s, a) => s + a.length, 0);
+  const grandTotal  = ex.pagination.length + totalAssets + ex.dev.length + ex.query.length + ex.hash.length + totalCustom;
+
+  const wrap = document.getElementById('spider-exclusion-summary');
+  if (grandTotal === 0) { wrap.classList.add('hidden'); return; }
+  wrap.classList.remove('hidden');
+  document.getElementById('spider-excl-summary-label').textContent = `${grandTotal} URL${grandTotal !== 1 ? 's' : ''} excluded by Workbench filters`;
+
+  const rowsEl = document.getElementById('spider-excl-summary-rows');
+  rowsEl.innerHTML = '';
+
+  const makeExclRow = (label, count, detail) => {
+    const d = document.createElement('div');
+    d.style.cssText = 'font-family:\'IBM Plex Mono\',monospace;font-size:0.7rem;display:flex;align-items:baseline;gap:0.6rem;';
+    d.innerHTML = `<strong style="color:var(--text-title);min-width:36px;text-align:right;">${count}</strong><span style="color:var(--text-muted);">${label}</span>${detail ? `<span style="color:var(--text-dimmer);font-size:0.63rem;">${detail}</span>` : ''}`;
+    rowsEl.appendChild(d);
+  };
+
+  if (ex.pagination.length) makeExclRow('pagination URLs', ex.pagination.length, '');
+  if (totalAssets) {
+    makeExclRow('static assets', totalAssets, '');
+    // Break down by extension
+    Object.entries(ex.assets).sort((a,b) => b[1].length - a[1].length).forEach(([ext, urls]) => {
+      makeExclRow(`.${ext}`, urls.length, '');
+    });
+  }
+  if (ex.dev.length)   makeExclRow('dev / system URLs', ex.dev.length, '');
+  if (ex.query.length) makeExclRow('query string URLs', ex.query.length, '');
+  if (ex.hash.length)  makeExclRow('hash / anchor URLs', ex.hash.length, '');
+  if (totalCustom) {
+    makeExclRow('custom pattern matches', totalCustom, '');
+    Object.entries(ex.custom).forEach(([pat, urls]) => {
+      makeExclRow(`"${pat}"`, urls.length, '');
+    });
+  }
+}
+
 function stopSpider() {
   spiderState.running = false;
   document.getElementById('btn-spider-stop').classList.add('hidden');
   document.getElementById('btn-spider-start').disabled = false;
   document.getElementById('spider-progress-fill').classList.remove('crawling');
   document.getElementById('spider-progress-fill').style.width = '100%';
+  document.getElementById('spider-progress-emoji').classList.remove('spinning');
   updateSpiderStats();
+  renderExclusionSummary();
 }
 
 // Spider proxy mode toggle
@@ -2960,7 +3418,7 @@ document.getElementById('spider-wb-header').addEventListener('click', () => {
 });
 
 // Spider URL exclusion
-function shouldExcludeUrl(url) {
+function shouldExcludeUrl(url, log = false) {
   const excPagination = document.getElementById('spider-excl-pagination').checked;
   const excAssets     = document.getElementById('spider-excl-assets').checked;
   const excDev        = document.getElementById('spider-excl-dev').checked;
@@ -2969,12 +3427,42 @@ function shouldExcludeUrl(url) {
   const customRaw     = document.getElementById('spider-excl-custom').value;
   const customPatterns = customRaw.split('\n').map(l => l.trim()).filter(Boolean);
 
-  if (excPagination && /[?&]page=|\/(page|p)\/\d/i.test(url)) return true;
-  if (excAssets && /\.(css|js|png|jpe?g|gif|svg|ico|webp|woff2?|ttf|eot|pdf|zip|mp4|mp3)(\?|$)/i.test(url)) return true;
-  if (excDev && /(wp-admin|wp-json|wp-login|wp-cron|\/feed\/?$|xmlrpc|\.well-known|\/amp\/?$)/i.test(url)) return true;
-  if (excQuery && url.includes('?')) return true;
-  if (excHash && url.includes('#')) return true;
-  for (const pat of customPatterns) { if (url.includes(pat)) return true; }
+  if (excPagination && /[?&]page=|\/(page|p)\/\d/i.test(url)) {
+    if (log) spiderState.excluded.pagination.push(url);
+    return true;
+  }
+  if (excAssets) {
+    const m = url.match(/\.(css|js|png|jpe?g|gif|svg|ico|webp|woff2?|ttf|eot|pdf|zip|mp4|mp3)(\?|$)/i);
+    if (m) {
+      if (log) {
+        const ext = m[1].toLowerCase().replace('jpeg','jpg');
+        if (!spiderState.excluded.assets[ext]) spiderState.excluded.assets[ext] = [];
+        spiderState.excluded.assets[ext].push(url);
+      }
+      return true;
+    }
+  }
+  if (excDev && /(wp-admin|wp-json|wp-login|wp-cron|\/feed\/?$|xmlrpc|\.well-known|\/amp\/?$)/i.test(url)) {
+    if (log) spiderState.excluded.dev.push(url);
+    return true;
+  }
+  if (excQuery && url.includes('?')) {
+    if (log) spiderState.excluded.query.push(url);
+    return true;
+  }
+  if (excHash && url.includes('#')) {
+    if (log) spiderState.excluded.hash.push(url);
+    return true;
+  }
+  for (const pat of customPatterns) {
+    if (url.includes(pat)) {
+      if (log) {
+        if (!spiderState.excluded.custom[pat]) spiderState.excluded.custom[pat] = [];
+        spiderState.excluded.custom[pat].push(url);
+      }
+      return true;
+    }
+  }
   return false;
 }
 
