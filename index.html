@@ -580,9 +580,12 @@
 
   <!-- ── PAGE: Analysis ── -->
   <div id="page-checker" class="hidden">
-    <div class="page-heading">
-      <div class="page-heading-title">Analysis</div>
-      <div class="page-heading-sub">Inspect the logic of your redirect map — detect loops, chains, and merged destinations without hitting the live web.</div>
+    <div class="page-heading" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
+      <div>
+        <div class="page-heading-title">Analysis</div>
+        <div class="page-heading-sub">Inspect the logic of your redirect map — detect loops, chains, and merged destinations without hitting the live web.</div>
+      </div>
+      <button class="btn-check" id="btn-run-all-analysis">Run all checks</button>
     </div>
     <div id="cors-warning" class="hidden">
       ⚠ Some URLs couldn't be checked — they may be blocking cross-origin requests (CORS). These are shown as <strong>ERR</strong> in the results.
@@ -2353,8 +2356,10 @@ document.getElementById('btn-home').addEventListener('click', () => {
 document.getElementById('btn-new-session').addEventListener('click', () => switchPage('mapper'));
 
 // ── Share links ────────────────────────────────────────────────────────────────
-function buildShareLink() {
-  const session = {
+const WAYPOINT_STORE = 'https://waypointstore.libertyhphillips.workers.dev';
+
+function buildSessionPayload() {
+  return {
     version: 1, savedAt: new Date().toISOString(),
     name: document.getElementById('session-name').value.trim() || '',
     oldInput: document.getElementById('old-input').value,
@@ -2363,23 +2368,67 @@ function buildShareLink() {
     newBase: document.getElementById('new-base').value,
     rules: state.rules, rows: state.rows,
   };
-  const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(session));
-  return `${location.origin}${location.pathname}#session=${compressed}`;
 }
 
-document.getElementById('btn-share-session').addEventListener('click', () => {
-  if (!state.rows.length) { alert('Analyse some URLs first before sharing.'); return; }
-  const link = buildShareLink();
-  navigator.clipboard.writeText(link).then(() => {
-    const btn = document.getElementById('btn-share-session');
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => btn.textContent = '⇪ Share', 2000);
+async function shareViaStore() {
+  const session = buildSessionPayload();
+  const res = await fetch(`${WAYPOINT_STORE}/store`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session }),
   });
+  if (!res.ok) throw new Error(`Store returned ${res.status}`);
+  const { id } = await res.json();
+  return `${location.origin}${location.pathname}#s=${id}`;
+}
+
+async function loadFromStore(id) {
+  const res = await fetch(`${WAYPOINT_STORE}/get?id=${encodeURIComponent(id)}`);
+  if (!res.ok) throw new Error(`Store returned ${res.status}`);
+  const { session } = await res.json();
+  return session;
+}
+
+document.getElementById('btn-share-session').addEventListener('click', async () => {
+  if (!state.rows.length) { alert('Analyse some URLs first before sharing.'); return; }
+  const btn = document.getElementById('btn-share-session');
+  btn.textContent = '… generating';
+  btn.disabled = true;
+  try {
+    const link = await shareViaStore();
+    await navigator.clipboard.writeText(link);
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = '⇪ Share'; btn.disabled = false; }, 2000);
+  } catch (err) {
+    console.warn('Store share failed, falling back to base64:', err);
+    // Fallback: base64 in URL (legacy long-link method)
+    const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(buildSessionPayload()));
+    const link = `${location.origin}${location.pathname}#session=${compressed}`;
+    await navigator.clipboard.writeText(link);
+    btn.textContent = '✓ Copied (long link)';
+    setTimeout(() => { btn.textContent = '⇪ Share'; btn.disabled = false; }, 2500);
+  }
 });
 
 // Check for share link on load, otherwise show home
-(function() {
+(async function() {
   const hash = location.hash;
+
+  // Short link via store Worker
+  if (hash.startsWith('#s=')) {
+    const id = hash.slice(3);
+    try {
+      const session = await loadFromStore(id);
+      if (!session?.version || !session?.rows) throw new Error('invalid');
+      loadSessionData(session);
+      saveToHistory();
+      history.replaceState(null, '', location.pathname);
+      switchPage('mapper');
+      return;
+    } catch(e) { console.warn('Could not load shared session from store:', e); }
+  }
+
+  // Legacy base64 link (backwards compatible)
   if (hash.startsWith('#session=')) {
     try {
       const json = LZString.decompressFromEncodedURIComponent(hash.slice('#session='.length));
@@ -2391,8 +2440,9 @@ document.getElementById('btn-share-session').addEventListener('click', () => {
       history.replaceState(null, '', location.pathname);
       switchPage('mapper');
       return;
-    } catch(e) { console.warn('Could not load shared session:', e); }
+    } catch(e) { console.warn('Could not load legacy shared session:', e); }
   }
+
   // Default: show home screen
   renderHomePage();
   switchPage('home');
@@ -2471,7 +2521,14 @@ function renderLoopResults(loops) {
 document.getElementById('btn-check-loops').addEventListener('click', () => {
   const loops = detectLoops();
   renderLoopResults(loops);
-  render(); // re-render mapper rows to show/hide badges
+  render();
+});
+
+document.getElementById('btn-run-all-analysis').addEventListener('click', () => {
+  renderLoopResults(detectLoops());
+  renderHopperResults(detectChains());
+  renderMergerResults(detectMergers());
+  render();
 });
 
 // ── Hopper (chain detector) ────────────────────────────────────────────────────
