@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Waypoint</title>
+  <meta name="author" content="Liberty Phillips" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpolygon points='16,2 19,14 16,11 13,14' fill='%23008080' opacity='0.9'/%3E%3Cpolygon points='16,30 19,18 16,21 13,18' fill='%23008080' opacity='0.55'/%3E%3Cpolygon points='2,16 14,13 11,16 14,19' fill='%23008080' opacity='0.55'/%3E%3Cpolygon points='30,16 18,13 21,16 18,19' fill='%23008080' opacity='0.9'/%3E%3Ccircle cx='16' cy='16' r='2.2' fill='%23008080'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -255,7 +256,25 @@
     .hopper-fix-path { font-family: 'IBM Plex Mono', monospace; font-size: 0.71rem; color: var(--tag-ok-text); }
     .btn-hopper-fix { background: none; border: 1px solid var(--tag-ok-bd); color: var(--tag-ok-text); border-radius: 3px; padding: 0.2rem 0.6rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .btn-hopper-fix:hover { background: var(--tag-ok-bg); }
-    /* validator */
+    /* footer */
+    .waypoint-footer { text-align: center; padding: 2rem 1rem 1.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--text-dimmer); }
+    .footer-divider { margin: 0 0.5rem; }
+    .footer-link { color: var(--text-dimmer); text-decoration: none; transition: color 0.15s; }
+    .footer-link:hover { color: var(--text-muted); }
+
+    /* modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    html.light .modal-overlay { background: rgba(0,0,0,0.35); }
+    .modal-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; width: 100%; max-width: 540px; max-height: 80vh; overflow-y: auto; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem 0.85rem; border-bottom: 1px solid var(--border-soft); }
+    .modal-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; font-weight: 600; color: var(--text-title); }
+    .modal-close { background: none; border: none; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 3px; transition: color 0.15s; }
+    .modal-close:hover { color: var(--text); }
+    .modal-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    .modal-section-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; font-weight: 600; color: var(--text-title); margin-bottom: 0.3rem; }
+    .modal-text { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.75rem; color: var(--text-muted); line-height: 1.7; }
+    .modal-link { color: #008080; text-decoration: none; }
+    .modal-link:hover { text-decoration: underline; }
     .val-check { display: flex; align-items: center; gap: 0.85rem; padding: 0.65rem 1rem; border-bottom: 1px solid var(--border-inner); font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; }
     .val-check:last-child { border-bottom: none; }
     .val-check-icon { font-size: 1rem; flex-shrink: 0; width: 1.4rem; text-align: center; }
@@ -851,6 +870,37 @@
 
 </div><!-- end #app -->
 
+<footer class="waypoint-footer">
+  <span>🐯</span>
+  <span class="footer-divider">//</span>
+  <a href="#" class="footer-link" onclick="document.getElementById('modal-boring').classList.remove('hidden');return false;">boring stuff</a>
+</footer>
+
+<!-- Disclaimer modal -->
+<div id="modal-boring" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">The Boring Stuff</span>
+      <button class="modal-close" onclick="document.getElementById('modal-boring').classList.add('hidden')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="modal-section-title">Disclaimer</div>
+      <p class="modal-text">Waypoint is provided as-is, without warranty of any kind. While every effort has been made to ensure accuracy, you are solely responsible for reviewing and testing any redirects before deploying them to a live site. The creator accepts no liability for any loss, damage, or disruption arising from the use of this tool.</p>
+
+      <div class="modal-section-title">Privacy</div>
+      <p class="modal-text">Waypoint runs entirely in your browser. No URLs, session data, or redirect mappings are transmitted to or stored on any server — everything stays on your device. The only exception is the Spider's proxy feature: when crawling a site, page requests are routed through a Cloudflare Worker proxy in order to bypass browser security restrictions. Only the URLs being crawled are passed through — no personal data is collected or logged.</p>
+
+      <div class="modal-section-title">Licence</div>
+      <p class="modal-text">All rights reserved. This tool and its source code may not be reproduced, distributed, or used as the basis for other products without explicit written permission from the creator.</p>
+
+      <div class="modal-section-title">Third-party services</div>
+      <p class="modal-text">The Spider proxy feature uses Cloudflare Workers. Use of this feature is subject to <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" class="modal-link">Cloudflare's privacy policy</a>. Font files are loaded from Google Fonts, subject to <a href="https://policies.google.com/privacy" target="_blank" class="modal-link">Google's privacy policy</a>.</p>
+
+    </div>
+  </div>
+</div>
+
 <script>
 // ── State ──────────────────────────────────────────────────────────────────────
 let state = {
@@ -902,6 +952,7 @@ function updateUndoButtons() {
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
   if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); redo(); }
+  if (e.key === 'Escape') { document.getElementById('modal-boring')?.classList.add('hidden'); }
 });
 
 // ── Theme toggle ───────────────────────────────────────────────────────────────
