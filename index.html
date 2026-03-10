@@ -3308,7 +3308,10 @@ async function runSpider() {
         const links = extractLinks(result.html, url).filter(l => {
           try {
             const u = new URL(l);
-            return u.origin === origin && !spiderState.visited.has(l) && !spiderState.queue.includes(l) && !shouldExcludeUrl(l);
+            if (u.origin !== origin) return false;
+            if (spiderState.visited.has(l) || spiderState.queue.includes(l)) return false;
+            if (shouldExcludeUrl(l, true)) return false;
+            return true;
           } catch { return false; }
         });
         spiderState.queue.push(...links);
