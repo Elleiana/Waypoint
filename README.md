@@ -1,7 +1,9 @@
 # Waypoint // site migration toolkit
 
 A self-contained tool for planning, mapping, and validating URL redirects during a site migration.
+
 No installs, no logins, no spreadsheets.
+
 Open it, do the work, export, done.
 
 ---
