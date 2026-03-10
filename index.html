@@ -146,7 +146,12 @@
 
     /* session bar */
     .session-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
-    .session-timestamp { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--text-muted); }
+    .session-timestamp { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--text-muted); white-space: nowrap; }
+    .session-name-wrap { display: flex; align-items: center; }
+    .session-name-input { background: none; border: none; border-bottom: 1px solid transparent; outline: none; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; font-weight: 600; color: var(--text-title); padding: 0.1rem 0.2rem; width: 220px; transition: border-color 0.15s; }
+    .session-name-input:hover { border-bottom-color: var(--border); }
+    .session-name-input:focus { border-bottom-color: #008080; }
+    .session-name-input::placeholder { color: var(--text-dimmer); font-weight: 400; }
 
     /* section cards */
     .section-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; }
@@ -369,6 +374,10 @@
     .loop-badge[title]:hover::after { content: attr(title); position: absolute; right: 0; top: 120%; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 0.35rem 0.6rem; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.68rem; color: var(--text); white-space: nowrap; z-index: 10; pointer-events: none; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
     .loop-row { display:flex; flex-direction:column; gap:0.3rem; padding:0.65rem 0.85rem; border-radius:4px; background:var(--cors-bg); border:1px solid var(--cors-bd); font-family:'IBM Plex Mono',monospace; font-size:0.71rem; }
     .loop-row-chain { color:var(--cors-text); line-height:1.8; }
+    /* spider workbench */
+    .spider-opt-row { display: flex; align-items: center; gap: 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.71rem; color: var(--text-body); cursor: pointer; }
+    .spider-opt-row input[type="checkbox"] { accent-color: #008080; width: 13px; height: 13px; flex-shrink: 0; cursor: pointer; }
+
     .spider-row { display:flex; align-items:center; gap:0.65rem; padding:0.45rem 0.85rem; border-radius:4px; font-family:'IBM Plex Mono',monospace; font-size:0.7rem; background:var(--row-redirect-bg); border:1px solid var(--row-redirect-bd); flex-wrap:wrap; }
     .spider-url { color:var(--text-body); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
     .spider-badge { font-size:0.63rem; padding:0.18rem 0.5rem; border-radius:3px; white-space:nowrap; flex-shrink:0; font-family:'IBM Plex Mono',monospace; }
@@ -419,7 +428,12 @@
 
     <!-- Session bar -->
     <div class="session-bar">
-      <span class="session-timestamp" id="session-timestamp"></span>
+      <div style="display:flex;align-items:center;gap:0.75rem;flex:1;min-width:0;">
+        <div class="session-name-wrap">
+          <input class="session-name-input" id="session-name" type="text" placeholder="Untitled project" maxlength="60" spellcheck="false" />
+        </div>
+        <span class="session-timestamp" id="session-timestamp"></span>
+      </div>
       <div class="session-btns">
         <button class="btn-session btn-undo" id="btn-undo" disabled title="Undo (Ctrl+Z)">↩ Undo</button>
         <button class="btn-session btn-redo" id="btn-redo" disabled title="Redo (Ctrl+Y)">↪ Redo</button>
@@ -613,8 +627,6 @@
           <p style="margin-bottom:0.75rem;color:var(--text-muted);">Browsers block requests to other websites for security reasons (CORS). A proxy sits in between — Waypoint asks the proxy to fetch the page, and the proxy returns it. This lets the Spider crawl any site.</p>
           <strong style="color:var(--text-title);">Automatic</strong> — uses the built-in Waypoint proxy. Works immediately, no setup needed.<br/>
           <strong style="color:var(--text-title);">Manual</strong> — use your own Cloudflare Worker proxy if you prefer to host it yourself.<br/><br/>
-
-          <!-- Cloudflare setup accordion -->
           <div style="border-top:1px solid var(--border-soft);padding-top:0.65rem;margin-top:0.1rem;">
             <a href="#" onclick="const b=document.getElementById('cf-setup-body');const a=document.getElementById('cf-setup-arrow');b.classList.toggle('hidden');a.textContent=b.classList.contains('hidden')?'▶':'▼';return false;" style="color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:0.5rem;">
               <span id="cf-setup-arrow" style="font-size:0.6rem;">▶</span>
@@ -634,6 +646,34 @@
       </div>
     </div>
 
+    <!-- Spider Workbench (accordion) -->
+    <div class="section-card" style="margin-top:0.75rem;">
+      <div class="card-header accordion" id="spider-wb-header">
+        <div class="card-header-text">
+          <div class="card-title">Workbench</div>
+          <div class="accordion-help">Advanced crawl options — filter out URLs you don't need before the crawl starts.</div>
+        </div>
+        <span class="accordion-toggle" id="spider-wb-toggle">◀</span>
+      </div>
+      <div class="accordion-body" id="spider-wb-body">
+        <div class="card-body">
+          <div class="workbench-section-label" style="margin-bottom:0.5rem;">Exclude from crawl</div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            <label class="spider-opt-row"><input type="checkbox" id="spider-excl-pagination" checked /> <span>Pagination <span class="rule-preview">?page=, /page/, /p/</span></span></label>
+            <label class="spider-opt-row"><input type="checkbox" id="spider-excl-assets" checked /> <span>Static assets <span class="rule-preview">.css, .js, .png, .jpg, .gif, .svg, .ico, .woff, .pdf</span></span></label>
+            <label class="spider-opt-row"><input type="checkbox" id="spider-excl-dev" checked /> <span>Dev &amp; system URLs <span class="rule-preview">wp-admin, wp-json, wp-login, /feed, /xmlrpc, /.well-known</span></span></label>
+            <label class="spider-opt-row"><input type="checkbox" id="spider-excl-query" /> <span>All query strings <span class="rule-preview">any URL containing ?</span></span></label>
+            <label class="spider-opt-row"><input type="checkbox" id="spider-excl-hash" checked /> <span>Hash/anchor links <span class="rule-preview">URLs containing #</span></span></label>
+          </div>
+          <div style="margin-top:0.85rem;">
+            <div class="workbench-section-label" style="margin-bottom:0.3rem;">Custom exclude patterns</div>
+            <div class="workbench-section-help">One pattern per line. Any URL containing a pattern will be skipped.</div>
+            <textarea id="spider-excl-custom" class="import-textarea" style="height:70px;" placeholder="/members/&#10;/checkout/&#10;/cart/"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Spider results -->
     <div id="spider-results" class="hidden" style="margin-top:1rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.85rem;flex-wrap:wrap;gap:0.5rem;">
@@ -647,6 +687,18 @@
           <button class="btn-session" id="btn-spider-use-old" title="Send to existing site URL list">→ use as existing site URLs</button>
           <button class="btn-session" id="btn-spider-use-new" title="Send to new site URL list">→ use as new site URLs</button>
           <button class="btn-session save" id="btn-spider-export">↓ export CSV</button>
+        </div>
+      </div>
+      <!-- Filter pills + search -->
+      <div class="filters" style="margin-bottom:0.75rem;">
+        <span class="filter-label">show:</span>
+        <button class="pill active" data-spider-filter="all">all</button>
+        <button class="pill" data-spider-filter="ok">ok</button>
+        <button class="pill" data-spider-filter="errors">errors</button>
+        <button class="pill" data-spider-filter="blocked">blocked</button>
+        <div class="search-wrap">
+          <input class="search-input" id="spider-search" type="text" placeholder="search URLs…" autocomplete="off" spellcheck="false" />
+          <button class="search-clear hidden" id="spider-search-clear" title="Clear search">✕</button>
         </div>
       </div>
       <div id="spider-rows" style="display:flex;flex-direction:column;gap:0.35rem;max-height:500px;overflow-y:auto;"></div>
@@ -1101,6 +1153,7 @@ function saveSession() {
   const session = {
     version: 1,
     savedAt: now,
+    name: document.getElementById('session-name').value.trim() || '',
     oldInput: document.getElementById('old-input').value,
     newInput: document.getElementById('new-input').value,
     oldBase: document.getElementById('old-base').value,
@@ -1111,8 +1164,8 @@ function saveSession() {
   const blob = new Blob([JSON.stringify(session, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  const date = now.slice(0,10);
-  a.download = `redirect-session-${date}.json`;
+  const safeName = (session.name || 'session').replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  a.download = `waypoint-${safeName}-${now.slice(0,10)}.json`;
   a.click();
   updateTimestamp(now);
 }
@@ -1127,6 +1180,7 @@ function loadSession(file) {
       document.getElementById('new-input').value = session.newInput || '';
       document.getElementById('old-base').value = session.oldBase || '';
       document.getElementById('new-base').value = session.newBase || '';
+      document.getElementById('session-name').value = session.name || '';
       state.rules = session.rules || [];
       state.rows = session.rows || [];
       state.tab = 'map';
@@ -1196,9 +1250,10 @@ function buildExport() {
 
 function exportFilename() {
   const d = new Date().toISOString().slice(0,10);
-  if (state.exportFormat === 'htaccess') return `redirects-${d}.htaccess`;
-  if (state.exportFormat === 'nginx') return `redirects-${d}.conf`;
-  return `redirects-${d}.csv`;
+  const name = (document.getElementById('session-name')?.value.trim() || 'redirects').replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  if (state.exportFormat === 'htaccess') return `${name}-${d}.htaccess`;
+  if (state.exportFormat === 'nginx') return `${name}-${d}.conf`;
+  return `${name}-${d}.csv`;
 }
 
 function exportMime() {
@@ -2207,6 +2262,7 @@ function updateSpiderStats() {
   document.getElementById('spider-stat-blocked').textContent = blocked;
   document.getElementById('spider-status').textContent =
     spiderState.running ? `crawling… ${total} found, ${spiderState.queue.length} queued` : `done — ${total} URLs found`;
+  renderSpiderRows();
 }
 
 async function runSpider() {
@@ -2216,7 +2272,13 @@ async function runSpider() {
   const origin = spiderOrigin(startUrl);
   if (!origin) { alert('Please enter a valid URL.'); return; }
 
-  // Reset
+  // Reset filter/search state
+  spiderFilter = 'all';
+  spiderSearch = '';
+  document.getElementById('spider-search').value = '';
+  document.getElementById('spider-search-clear').classList.add('hidden');
+  document.querySelectorAll('[data-spider-filter]').forEach(b => b.classList.toggle('active', b.dataset.spiderFilter === 'all'));
+
   spiderState = { running: true, queue: [normaliseUrl(startUrl, startUrl)], visited: new Set(), results: [], base: origin };
   document.getElementById('spider-results').classList.remove('hidden');
   document.getElementById('spider-rows').innerHTML = '';
@@ -2229,22 +2291,17 @@ async function runSpider() {
     while (spiderState.running && spiderState.queue.length > 0) {
       const url = spiderState.queue.shift();
       if (!url || spiderState.visited.has(url)) continue;
+      if (shouldExcludeUrl(url)) { spiderState.visited.add(url); continue; }
       spiderState.visited.add(url);
 
       const item = { url, ok: null, status: null, statusText: '…' };
       spiderState.results.push(item);
-      const rowEl = renderSpiderRow(item);
-      document.getElementById('spider-rows').prepend(rowEl);
       updateSpiderStats();
 
       const result = await fetchPage(url);
       item.ok = result.ok;
       item.status = result.status;
       item.statusText = result.statusText;
-
-      // Update the row in place
-      const newRow = renderSpiderRow(item);
-      rowEl.replaceWith(newRow);
       updateSpiderStats();
 
       // Extract and queue new links if we got HTML back
@@ -2252,7 +2309,7 @@ async function runSpider() {
         const links = extractLinks(result.html, url).filter(l => {
           try {
             const u = new URL(l);
-            return u.origin === origin && !spiderState.visited.has(l) && !spiderState.queue.includes(l);
+            return u.origin === origin && !spiderState.visited.has(l) && !spiderState.queue.includes(l) && !shouldExcludeUrl(l);
           } catch { return false; }
         });
         spiderState.queue.push(...links);
@@ -2304,12 +2361,95 @@ document.getElementById('spider-proxy-manual').addEventListener('click', () => {
   document.getElementById('spider-proxy').classList.remove('hidden');
 });
 
+// Spider Workbench accordion
+document.getElementById('spider-wb-header').addEventListener('click', () => {
+  const header = document.getElementById('spider-wb-header');
+  const body   = document.getElementById('spider-wb-body');
+  const toggle = document.getElementById('spider-wb-toggle');
+  header.classList.toggle('open');
+  body.classList.toggle('open');
+  toggle.style.transform = header.classList.contains('open') ? 'rotate(-90deg)' : '';
+});
+
+// Spider URL exclusion
+function shouldExcludeUrl(url) {
+  const excPagination = document.getElementById('spider-excl-pagination').checked;
+  const excAssets     = document.getElementById('spider-excl-assets').checked;
+  const excDev        = document.getElementById('spider-excl-dev').checked;
+  const excQuery      = document.getElementById('spider-excl-query').checked;
+  const excHash       = document.getElementById('spider-excl-hash').checked;
+  const customRaw     = document.getElementById('spider-excl-custom').value;
+  const customPatterns = customRaw.split('\n').map(l => l.trim()).filter(Boolean);
+
+  if (excPagination && /[?&]page=|\/(page|p)\/\d/i.test(url)) return true;
+  if (excAssets && /\.(css|js|png|jpe?g|gif|svg|ico|webp|woff2?|ttf|eot|pdf|zip|mp4|mp3)(\?|$)/i.test(url)) return true;
+  if (excDev && /(wp-admin|wp-json|wp-login|wp-cron|\/feed\/?$|xmlrpc|\.well-known|\/amp\/?$)/i.test(url)) return true;
+  if (excQuery && url.includes('?')) return true;
+  if (excHash && url.includes('#')) return true;
+  for (const pat of customPatterns) { if (url.includes(pat)) return true; }
+  return false;
+}
+
+// Spider filter + search state
+let spiderFilter = 'all';
+let spiderSearch = '';
+
+function getSpiderDisplayed() {
+  return spiderState.results.filter(r => {
+    if (spiderFilter === 'ok')      return r.ok === true;
+    if (spiderFilter === 'errors')  return r.ok === false;
+    if (spiderFilter === 'blocked') return r.ok === null;
+    return true;
+  }).filter(r => {
+    if (!spiderSearch) return true;
+    return r.url.toLowerCase().includes(spiderSearch.toLowerCase());
+  });
+}
+
+function renderSpiderRows() {
+  const container = document.getElementById('spider-rows');
+  const displayed = getSpiderDisplayed();
+  container.innerHTML = '';
+  if (!displayed.length) {
+    container.innerHTML = '<div class="empty">no URLs match this filter</div>';
+    return;
+  }
+  displayed.forEach(item => container.appendChild(renderSpiderRow(item)));
+}
+
+// Override updateSpiderStats to also re-render filtered rows
+const _origUpdateSpiderStats = updateSpiderStats;
+
+// Spider filter pills
+document.querySelectorAll('[data-spider-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    spiderFilter = btn.dataset.spiderFilter;
+    document.querySelectorAll('[data-spider-filter]').forEach(b => b.classList.toggle('active', b.dataset.spiderFilter === spiderFilter));
+    renderSpiderRows();
+  });
+});
+
+// Spider search
+document.getElementById('spider-search').addEventListener('input', e => {
+  spiderSearch = e.target.value;
+  document.getElementById('spider-search-clear').classList.toggle('hidden', !spiderSearch);
+  renderSpiderRows();
+});
+document.getElementById('spider-search-clear').addEventListener('click', () => {
+  spiderSearch = '';
+  document.getElementById('spider-search').value = '';
+  document.getElementById('spider-search-clear').classList.add('hidden');
+  renderSpiderRows();
+});
+
 document.getElementById('btn-spider-start').addEventListener('click', runSpider);
 document.getElementById('btn-spider-stop').addEventListener('click', stopSpider);
 
-// Send to mapper inputs
+// Send to mapper inputs — only send ok URLs
 function spiderUrlList() {
-  return spiderState.results.map(r => r.url).join('\n');
+  return spiderState.results
+    .filter(r => r.ok === true || r.ok === null) // include blocked too (url still valid)
+    .map(r => r.url).join('\n');
 }
 
 document.getElementById('btn-spider-use-old').addEventListener('click', () => {
