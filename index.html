@@ -64,56 +64,56 @@
     }
 
     html.light {
-      --bg:           #eeeee8;
-      --bg-card:      #f8f8f4;
-      --bg-card-hd:   #e8e8e0;
-      --bg-input:     #f2f2ec;
-      --bg-edit:      #f8f8f4;
-      --border:       #c8c8be;
-      --border-soft:  #d4d4c8;
-      --border-inner: #d8d8cc;
-      --text:         #111118;
-      --text-strong:  #05050a;
-      --text-title:   #1a1a24;
-      --text-muted:   #666;
-      --text-dim:     #777;
-      --text-dimmer:  #aaa;
-      --text-body:    #282832;
-      --text-help:    #666;
-      --text-stat:    #555;
-      --scrollbar:    #bbb;
-      --row-unchanged-bg:  #e4f4e8;
-      --row-unchanged-bd:  #9ed0aa;
-      --row-redirect-bg:   #f2f2ec;
-      --row-redirect-bd:   #c8c8be;
-      --row-confirmed-bg:  #daf0e0;
-      --row-confirmed-bd:  #8cc89a;
-      --arrow-color:       #999;
-      --suggestion-bg:     #e8e8e2;
-      --suggestion-bd:     #bbbbb0;
-      --suggestion-text:   #333;
-      --tag-ok-bg:         #d0edda;
-      --tag-ok-text:       #1a6e34;
-      --tag-ok-bd:         #8cc89a;
-      --export-bg:         #ececе4;
-      --export-text:       #1a5430;
-      --placeholder-text:  #aaa;
-      --empty-text:        #aaa;
-      --flip-bd:           #bbb;
-      --rule-remove-bd:    #c8c8be;
-      --cors-bg:           #fef3cc;
-      --cors-bd:           #d4aa30;
-      --cors-text:         #6a4a10;
-      --custom-tag-bg:     #fdeec8;
-      --custom-tag-bd:     #d4aa30;
-      --custom-tag-text:   #6a4a10;
-      --file-hover:        #006666;
-      --save-bd:           #8cc89a;
-      --save-text:         #1a6e34;
-      --save-hover-bg:     #d0edda;
-      --status-chk-bd:     #bbb;
-      --status-chk-bg:     #e8e8e2;
-      --confirmed-color:   #a07010;
+      --bg:           #e8e8e2;
+      --bg-card:      #f5f5f0;
+      --bg-card-hd:   #e2e2da;
+      --bg-input:     #ededе6;
+      --bg-edit:      #f5f5f0;
+      --border:       #b8b8ae;
+      --border-soft:  #c8c8be;
+      --border-inner: #d0d0c4;
+      --text:         #0d0d12;
+      --text-strong:  #020208;
+      --text-title:   #141420;
+      --text-muted:   #555;
+      --text-dim:     #666;
+      --text-dimmer:  #999;
+      --text-body:    #1e1e28;
+      --text-help:    #585858;
+      --text-stat:    #444;
+      --scrollbar:    #aaa;
+      --row-unchanged-bg:  #ddf0e2;
+      --row-unchanged-bd:  #88c496;
+      --row-redirect-bg:   #ededе6;
+      --row-redirect-bd:   #b8b8ae;
+      --row-confirmed-bg:  #d2ecd8;
+      --row-confirmed-bd:  #7ab888;
+      --arrow-color:       #888;
+      --suggestion-bg:     #e2e2da;
+      --suggestion-bd:     #aeaea4;
+      --suggestion-text:   #222;
+      --tag-ok-bg:         #c8e8d2;
+      --tag-ok-text:       #145828;
+      --tag-ok-bd:         #7ab888;
+      --export-bg:         #e8e8e0;
+      --export-text:       #144820;
+      --placeholder-text:  #999;
+      --empty-text:        #999;
+      --flip-bd:           #aaa;
+      --rule-remove-bd:    #b8b8ae;
+      --cors-bg:           #fef0c0;
+      --cors-bd:           #c8a020;
+      --cors-text:         #5a3c08;
+      --custom-tag-bg:     #fde8b8;
+      --custom-tag-bd:     #c8a020;
+      --custom-tag-text:   #5a3c08;
+      --file-hover:        #005555;
+      --save-bd:           #7ab888;
+      --save-text:         #145828;
+      --save-hover-bg:     #c8e8d2;
+      --status-chk-bd:     #aaa;
+      --status-chk-bg:     #e2e2da;
+      --confirmed-color:   #8a5e08;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -256,6 +256,11 @@
     .hopper-fix-path { font-family: 'IBM Plex Mono', monospace; font-size: 0.71rem; color: var(--tag-ok-text); }
     .btn-hopper-fix { background: none; border: 1px solid var(--tag-ok-bd); color: var(--tag-ok-text); border-radius: 3px; padding: 0.2rem 0.6rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .btn-hopper-fix:hover { background: var(--tag-ok-bg); }
+    /* page heading */
+    .page-heading { margin-bottom: 1.25rem; }
+    .page-heading-title { font-family: 'IBM Plex Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--text-strong); letter-spacing: -0.02em; margin-bottom: 0.25rem; }
+    .page-heading-sub { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.78rem; color: var(--text-muted); }
+
     /* footer */
     .waypoint-footer { text-align: center; padding: 2rem 1rem 1.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--text-dimmer); }
     .footer-divider { margin: 0 0.5rem; }
@@ -323,16 +328,16 @@
     .pill { font-family: 'IBM Plex Mono', monospace; font-size: 0.67rem; padding: 0.28rem 0.7rem; border-radius: 20px; border: 1px solid var(--border); background: none; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
     .pill:hover { border-color: var(--text-muted); color: var(--text-title); }
     .pill.active { border-color: #008080; background: #001f1f; color: #008080; }
-    html.light .pill.active { background: #cceaea; }
+    html.light .pill.active { background: #c0e4e4; }
     .btn-accept-all { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; padding: 0.3rem 0.85rem; background: #001f1f; border: 1px solid #004d4d; color: #008080; border-radius: 3px; cursor: pointer; transition: all 0.15s; }
     .btn-accept-all--dim { background: none !important; border-color: var(--border) !important; color: var(--text-muted) !important; cursor: not-allowed !important; }
     .btn-flatten-chains { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; padding: 0.3rem 0.85rem; background: none; border: 1px solid #004d4d; color: #008080; border-radius: 3px; cursor: pointer; transition: all 0.15s; }
     .btn-flatten-chains:hover { background: #001f1f; border-color: #008080; color: #00b3b3; }
-    html.light .btn-flatten-chains { border-color: #60b0b0; }
-    html.light .btn-flatten-chains:hover { background: #cceaea; }
-    html.light .btn-accept-all { background: #cceaea; border-color: #60b0b0; }
+    html.light .btn-flatten-chains { border-color: #50a0a0; }
+    html.light .btn-flatten-chains:hover { background: #c0e4e4; }
+    html.light .btn-accept-all { background: #c0e4e4; border-color: #50a0a0; }
     .btn-accept-all:hover { background: #002d2d; border-color: #008080; color: #00b3b3; }
-    html.light .btn-accept-all:hover { background: #b0dede; }
+    html.light .btn-accept-all:hover { background: #a8d8d8; }
 
     /* rows */
     #rows-container { display: flex; flex-direction: column; gap: 0.35rem; }
@@ -345,18 +350,22 @@
     .arrow { color: var(--arrow-color); flex-shrink: 0; }
     .tag-ok { background: var(--tag-ok-bg); color: var(--tag-ok-text); border: 1px solid var(--tag-ok-bd); padding: 0.18rem 0.55rem; border-radius: 3px; font-size: 0.64rem; white-space: nowrap; }
 
-    /* status badges */
+    .unchanged-edit-wrap { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .unchanged-warning { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.68rem; color: var(--cors-text); }
+    .row-unchanged-override { border-color: var(--cors-bd) !important; background: var(--cors-bg) !important; }
+    .btn-unchanged-edit { background: none; border: 1px solid var(--flip-bd); color: var(--text-dimmer); width: 26px; height: 26px; border-radius: 3px; cursor: pointer; font-size: 0.82rem; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; margin-left: auto; }
+    .btn-unchanged-edit:hover { border-color: #008080; color: #008080; }
     .status-badge { font-size: 0.63rem; padding: 0.18rem 0.5rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; }
     .check-badge { min-width: 90px; text-align: center; }
     .check-badge--pending { color: var(--text-dimmer); border: 1px solid var(--border); background: none; }
     .status-ok { color: #5aab72; border: 1px solid #243d28; background: #172a1c; }
-    html.light .status-ok { color: #1a6e34; border-color: #8cc89a; background: #d0edda; }
+    html.light .status-ok { color: #145828; border-color: #7ab888; background: #c8e8d2; }
     .status-error { color: #c86a5a; border: 1px solid #3a1e1a; background: #1e0f0c; }
-    html.light .status-error { color: #8a2020; border-color: #d09090; background: #f8e8e8; }
+    html.light .status-error { color: #7a1818; border-color: #c08080; background: #f0e0e0; }
     .status-dest-ok { color: #008080; border: 1px solid #004d4d; background: #001f1f; }
-    html.light .status-dest-ok { border-color: #60b0b0; background: #cceaea; }
+    html.light .status-dest-ok { border-color: #50a0a0; background: #c0e4e4; }
     .status-dest-error { color: #e8a45a; border: 1px solid #3a2808; background: #1a1008; }
-    html.light .status-dest-error { color: #6a4a10; border-color: #d4aa30; background: #fef3cc; }
+    html.light .status-dest-error { color: #5a3c08; border-color: #c8a020; background: #fef0c0; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
 
     .suggestion-area { display: flex; align-items: center; gap: 0.5rem; flex: 1; flex-wrap: wrap; }
@@ -393,6 +402,10 @@
     .loop-badge[title]:hover::after { content: attr(title); position: absolute; right: 0; top: 120%; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 0.35rem 0.6rem; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.68rem; color: var(--text); white-space: nowrap; z-index: 10; pointer-events: none; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
     .loop-row { display:flex; flex-direction:column; gap:0.3rem; padding:0.65rem 0.85rem; border-radius:4px; background:var(--cors-bg); border:1px solid var(--cors-bd); font-family:'IBM Plex Mono',monospace; font-size:0.71rem; }
     .loop-row-chain { color:var(--cors-text); line-height:1.8; }
+    .spider-progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #008080, #00a0a0); transition: width 0.3s ease; width: 0%; }
+    @keyframes spiderPulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .spider-progress-fill.crawling { animation: spiderPulse 1.5s ease-in-out infinite; width: 100%; }
+
     /* spider workbench */
     .spider-opt-row { display: flex; align-items: center; gap: 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.71rem; color: var(--text-body); cursor: pointer; }
     .spider-opt-row input[type="checkbox"] { accent-color: #008080; width: 13px; height: 13px; flex-shrink: 0; cursor: pointer; }
@@ -404,8 +417,8 @@
     .spider-err  { color:#c86a5a; border:1px solid #3a1e1a; background:#1e0f0c; }
     .spider-blk  { color:var(--text-muted); border:1px solid var(--border); background:var(--bg-input); }
     .spider-pend { color:var(--text-muted); border:1px solid var(--border); background:var(--bg-input); animation:pulse 1.2s ease-in-out infinite; }
-    html.light .spider-ok  { color:#1a6e34; border-color:#8cc89a; background:#d0edda; }
-    html.light .spider-err { color:#8a2020; border-color:#d09090; background:#f8e8e8; }
+    html.light .spider-ok  { color:#145828; border-color:#7ab888; background:#c8e8d2; }
+    html.light .spider-err { color:#7a1818; border-color:#c08080; background:#f0e0e0; }
     .export-format-bar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem; flex-wrap: wrap; }
     #export-preview { background: var(--export-bg); border: 1px solid var(--border); border-radius: 4px; padding: 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--export-text); max-height: 280px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.65; margin-bottom: 1rem; }
 
@@ -435,7 +448,7 @@
     </div>
     <nav class="header-nav">
       <button class="nav-tab active" data-page="mapper"><span class="nav-emoji">🗺️</span>Mapper</button>
-      <button class="nav-tab" data-page="checker"><span class="nav-emoji">🩺</span>Health</button>
+      <button class="nav-tab" data-page="checker"><span class="nav-emoji">🧪</span>Analysis</button>
       <button class="nav-tab" data-page="spider"><span class="nav-emoji">🕷️</span>Spider</button>
       <button class="nav-tab" data-page="validator"><span class="nav-emoji">📊</span>Validator</button>
     </nav>
@@ -445,19 +458,28 @@
   <!-- ── PAGE: Redirect Mapper ── -->
   <div id="page-mapper">
 
-    <!-- Session bar -->
-    <div class="session-bar">
-      <div style="display:flex;align-items:center;gap:0.75rem;flex:1;min-width:0;">
-        <div class="session-name-wrap">
-          <input class="session-name-input" id="session-name" type="text" placeholder="Untitled project" maxlength="60" spellcheck="false" />
+    <div class="page-heading">
+      <div class="page-heading-title">Mapper</div>
+      <div class="page-heading-sub">Cross-reference old and new URLs, confirm redirect destinations, and manage your full migration map.</div>
+    </div>
+
+    <!-- Session card -->
+    <div class="section-card" style="margin-bottom:1rem;">
+      <div class="card-body" style="padding:0.65rem 1rem;">
+        <div class="session-bar" style="margin-bottom:0;">
+          <div style="display:flex;align-items:center;gap:0.75rem;flex:1;min-width:0;">
+            <div class="session-name-wrap">
+              <input class="session-name-input" id="session-name" type="text" placeholder="Untitled project" maxlength="60" spellcheck="false" />
+            </div>
+            <span class="session-timestamp" id="session-timestamp"></span>
+          </div>
+          <div class="session-btns">
+            <button class="btn-session btn-undo" id="btn-undo" disabled title="Undo (Ctrl+Z)">↩ Undo</button>
+            <button class="btn-session btn-redo" id="btn-redo" disabled title="Redo (Ctrl+Y)">↪ Redo</button>
+            <button class="btn-session save" id="btn-save-session">↓ Save session</button>
+            <label class="btn-session" id="btn-load-label" title="Load a previously saved session">↑ Load session<input type="file" id="btn-load-session" accept=".json" hidden /></label>
+          </div>
         </div>
-        <span class="session-timestamp" id="session-timestamp"></span>
-      </div>
-      <div class="session-btns">
-        <button class="btn-session btn-undo" id="btn-undo" disabled title="Undo (Ctrl+Z)">↩ Undo</button>
-        <button class="btn-session btn-redo" id="btn-redo" disabled title="Redo (Ctrl+Y)">↪ Redo</button>
-        <button class="btn-session save" id="btn-save-session">↓ Save session</button>
-        <label class="btn-session" id="btn-load-label" title="Load a previously saved session">↑ Load session<input type="file" id="btn-load-session" accept=".json" hidden /></label>
       </div>
     </div>
 
@@ -536,31 +558,11 @@
 
   </div><!-- end #page-mapper -->
 
-  <!-- ── PAGE: Live Check ── -->
+  <!-- ── PAGE: Analysis ── -->
   <div id="page-checker" class="hidden">
-    <div class="section-card">
-      <div class="card-header">
-        <div class="card-header-text">
-          <div class="card-title">Live Check</div>
-          <div class="card-help">Checks old URLs for 404s, and validates that confirmed redirect destinations resolve correctly on the new site.</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="check-row">
-          <div class="base-url-wrap">
-            <label class="base-url-label" for="old-base">Existing site base URL</label>
-            <input class="base-url-input" id="old-base" type="url" placeholder="https://old-site.com" />
-          </div>
-          <div class="check-divider"></div>
-          <div class="base-url-wrap">
-            <label class="base-url-label" for="new-base">New site base URL</label>
-            <input class="base-url-input" id="new-base" type="url" placeholder="https://new-site.com" />
-          </div>
-          <div class="check-divider"></div>
-          <button class="btn-check" id="btn-check" disabled>Check live URLs</button>
-          <button class="btn-check hidden" id="btn-recheck" style="background:var(--bg-card);border:1px solid #004d4d;color:#008080;" title="Re-check only URLs that have changed since the last check">↺ re-check changed</button>
-        </div>
-      </div>
+    <div class="page-heading">
+      <div class="page-heading-title">Analysis</div>
+      <div class="page-heading-sub">Inspect the logic of your redirect map — detect loops, chains, and merged destinations without hitting the live web.</div>
     </div>
     <div id="cors-warning" class="hidden">
       ⚠ Some URLs couldn't be checked — they may be blocking cross-origin requests (CORS). These are shown as <strong>ERR</strong> in the results.
@@ -575,7 +577,7 @@
       <div class="card-header">
         <div class="card-header-text">
           <div class="card-title">Looper</div>
-          <div class="card-help">Scans all confirmed redirects for direct and chained loops. Any loops found are also flagged inline on the Redirect Mapper.</div>
+          <div class="card-help">Scans all confirmed redirects for direct and chained loops.</div>
         </div>
         <button class="btn-check" id="btn-check-loops" style="align-self:center;">Check for loops</button>
       </div>
@@ -590,7 +592,7 @@
       <div class="card-header">
         <div class="card-header-text">
           <div class="card-title">Hopper</div>
-          <div class="card-help">Detects redirect chains across your confirmed redirects — where A → B → C creates unnecessary hops. Anything over one hop is flagged, with a suggested flattened redirect.</div>
+          <div class="card-help">Detects redirect chains across confirmed redirects, and flags anything over one hop.</div>
         </div>
         <div style="display:flex;gap:0.5rem;align-self:center;">
           <button class="btn-flatten-chains hidden" id="btn-flatten-chains" title="Flatten all chains to single hops in one go">🔗 flatten all</button>
@@ -603,15 +605,34 @@
       </div>
     </div>
 
+    <!-- Merger card -->
+    <div class="section-card" style="margin-top:1rem;">
+      <div class="card-header">
+        <div class="card-header-text">
+          <div class="card-title">Merger</div>
+          <div class="card-help">Finds destination URLs that multiple old URLs redirect to.</div>
+        </div>
+        <button class="btn-check" id="btn-check-mergers">Check for mergers</button>
+      </div>
+      <div id="merger-results" class="hidden" style="padding:1rem;">
+        <div id="merger-summary" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-bottom:0.75rem;"></div>
+        <div id="merger-rows" style="display:flex;flex-direction:column;gap:0.5rem;"></div>
+      </div>
+    </div>
+
   </div><!-- end #page-checker -->
 
   <!-- ── PAGE: Spider ── -->
   <div id="page-spider" class="hidden">
+    <div class="page-heading">
+      <div class="page-heading-title">Spider</div>
+      <div class="page-heading-sub">Crawl a site to discover all its internal URLs — then send them straight to the Mapper.</div>
+    </div>
     <div class="section-card">
       <div class="card-header">
         <div class="card-header-text">
-          <div class="card-title">Spider</div>
-          <div class="card-help">Crawl a site to discover all internal URLs. Add a Cloudflare Worker proxy URL below to crawl any site — without it, most sites will be blocked by browser CORS restrictions.</div>
+          <div class="card-title">Crawl settings</div>
+          <div class="card-help">A proxy is required to crawl most external sites — use automatic to get started immediately.</div>
         </div>
       </div>
       <div class="card-body">
@@ -661,7 +682,19 @@
             </div>
           </div>
         </div>
-        <div id="spider-status" class="hidden" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-top:0.65rem;"></div>
+        <div id="spider-progress-wrap" class="hidden" style="margin-top:0.85rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+            <span id="spider-status" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--text-muted);"></span>
+            <span id="spider-progress-emoji" style="font-size:1rem;line-height:1;">🕸️</span>
+          </div>
+          <div class="progress-bar-track">
+            <div class="spider-progress-fill" id="spider-progress-fill"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:0.3rem;">
+            <span id="spider-depth-info" style="font-family:'IBM Plex Mono',monospace;font-size:0.62rem;color:var(--text-dimmer);"></span>
+            <span id="spider-queue-info" style="font-family:'IBM Plex Mono',monospace;font-size:0.62rem;color:var(--text-dimmer);"></span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -727,32 +760,44 @@
   <!-- ── PAGE: Validator ── -->
   <div id="page-validator" class="hidden">
 
-    <!-- Base URLs card -->
-    <div class="section-card">
+    <div class="page-heading">
+      <div class="page-heading-title">Validator</div>
+      <div class="page-heading-sub">Runs a full QA check on your mapped redirects — loops, chains, duplicates, and status checks.</div>
+    </div>
+
+    <!-- Live Check card (moved from Analysis) -->
+    <div class="section-card" style="margin-bottom:1rem;">
       <div class="card-header">
         <div class="card-header-text">
-          <div class="card-title">Validator</div>
-          <div class="card-help">Runs a full QA check on your confirmed redirects — loops, chains, duplicate destinations, missing destinations, and optionally live status checks. Pass all checks before you export.</div>
+          <div class="card-title">Live Check</div>
+          <div class="card-help">Check that old URLs respond correctly and confirmed destinations resolve on the new site. Optional — leave blank to skip.</div>
         </div>
-        <button class="btn-check" id="btn-run-validator">Run checks</button>
       </div>
       <div class="card-body">
         <div class="check-row">
           <div class="base-url-wrap">
-            <label class="base-url-label" for="val-old-base">Old site base URL <span style="color:var(--text-dimmer)">(optional — for live checks)</span></label>
-            <input class="base-url-input" id="val-old-base" type="url" placeholder="https://old-site.com" />
+            <label class="base-url-label" for="old-base">Existing site base URL <span style="color:var(--text-dimmer)">(optional)</span></label>
+            <input class="base-url-input" id="old-base" type="url" placeholder="https://old-site.com" />
           </div>
           <div class="check-divider"></div>
           <div class="base-url-wrap">
-            <label class="base-url-label" for="val-new-base">New site base URL <span style="color:var(--text-dimmer)">(optional — for live checks)</span></label>
-            <input class="base-url-input" id="val-new-base" type="url" placeholder="https://new-site.com" />
+            <label class="base-url-label" for="new-base">New site base URL <span style="color:var(--text-dimmer)">(optional)</span></label>
+            <input class="base-url-input" id="new-base" type="url" placeholder="https://new-site.com" />
           </div>
+          <div class="check-divider"></div>
+          <button class="btn-check" id="btn-check" disabled>Check live URLs</button>
+          <button class="btn-check hidden" id="btn-recheck" style="background:var(--bg-card);border:1px solid #004d4d;color:#008080;" title="Re-check only URLs that have changed since the last check">↺ re-check changed</button>
         </div>
       </div>
     </div>
 
+    <!-- Run checks button -->
+    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+      <button class="btn-check" id="btn-run-validator">Run checks</button>
+    </div>
+
     <!-- Validator results -->
-    <div id="validator-results" class="hidden" style="margin-top:1rem;">
+    <div id="validator-results" class="hidden">
 
       <!-- Check list -->
       <div class="section-card">
@@ -773,7 +818,6 @@
           <div class="card-header">
             <div class="card-header-text">
               <div class="card-title">Issues</div>
-              <div class="card-help">Details of every failed check — fix these before exporting.</div>
             </div>
           </div>
           <div class="card-body">
@@ -787,7 +831,7 @@
         <div class="card-header">
           <div class="card-header-text">
             <div class="card-title">Report</div>
-            <div class="card-help">Generate a shareable summary of your migration — opens in a new tab.</div>
+            <div class="card-help">Generate a shareable summary — opens in a new tab.</div>
           </div>
           <div style="display:flex;gap:0.5rem;align-self:center;">
             <button class="btn-session save" id="btn-download-report">↓ HTML report</button>
@@ -1267,14 +1311,18 @@ document.getElementById('btn-load-session').addEventListener('change', e => {
 // ── Export ─────────────────────────────────────────────────────────────────────
 function buildCSV() {
   const confirmed = state.rows.filter(r => r.status === 'redirect' && r.confirmed);
-  return [['Old URL','New URL','Type'], ...confirmed.map(r => [r.old, r.confirmed, r.redirectType||301])]
-    .map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const overrides = state.rows.filter(r => r.status === 'unchanged' && r.override);
+  return [['Old URL','New URL','Type'],
+    ...confirmed.map(r => [r.old, r.confirmed, r.redirectType||301]),
+    ...overrides.map(r => [r.old, r.override, 301])
+  ].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
 }
 
 function buildHtaccess() {
   const confirmed = state.rows.filter(r => r.status === 'redirect' && r.confirmed);
+  const overrides = state.rows.filter(r => r.status === 'unchanged' && r.override);
   const lines = ['# Generated by Waypoint // site migration toolkit', ''];
-  confirmed.forEach(r => {
+  [...confirmed, ...overrides.map(r => ({ old: r.old, confirmed: r.override, redirectType: 301 }))].forEach(r => {
     const type = r.redirectType === 302 ? '302' : '301';
     lines.push(`Redirect ${type} ${r.old} ${r.confirmed}`);
   });
@@ -1283,10 +1331,10 @@ function buildHtaccess() {
 
 function buildNginx() {
   const confirmed = state.rows.filter(r => r.status === 'redirect' && r.confirmed);
+  const overrides = state.rows.filter(r => r.status === 'unchanged' && r.override);
   const lines = ['# Generated by Waypoint // site migration toolkit', ''];
-  confirmed.forEach(r => {
+  [...confirmed, ...overrides.map(r => ({ old: r.old, confirmed: r.override, redirectType: 301 }))].forEach(r => {
     const flag = r.redirectType === 302 ? 'redirect' : 'permanent';
-    // Escape special regex chars in the path
     const escaped = r.old.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     lines.push(`rewrite ^${escaped}$ ${r.confirmed} ${flag};`);
   });
@@ -1541,7 +1589,95 @@ function makeRow(row) {
   const div = document.createElement('div');
   if (row.status === 'unchanged') {
     div.className = 'row row-unchanged';
-    div.innerHTML = `<span class="url-unchanged">${esc(row.old)}</span><span class="tag-ok">✓ no redirect</span>`;
+    const id = cssId(row.old);
+    // If an override has been set, show it like a confirmed redirect row
+    if (row.override) {
+      div.className = 'row row-unchanged row-unchanged-override';
+      div.innerHTML = `
+        <span class="url-unchanged" style="color:#c86a5a;">${esc(row.old)}</span>
+        <span class="arrow">→</span>
+        <span class="custom-tag" style="flex:1;">override: ${esc(row.override)}</span>
+        <button class="btn-edit btn-override-edit" data-old="${esc(row.old)}" title="Edit override">✎</button>
+        <button class="btn-sm btn-cancel btn-override-clear" data-old="${esc(row.old)}" title="Remove override" style="border-color:var(--border);">✕</button>
+        <div class="edit-area hidden" id="edit-${id}" style="flex-basis:100%;margin-top:0.35rem;">
+          <input class="edit-input" value="${esc(row.override)}" data-old="${esc(row.old)}" placeholder="/new-destination" />
+          <button class="btn-sm btn-ok" data-old="${esc(row.old)}">✓</button>
+          <button class="btn-sm btn-cancel" data-old="${esc(row.old)}">✕</button>
+        </div>`;
+    } else {
+      div.innerHTML = `
+        <span class="url-unchanged">${esc(row.old)}</span>
+        <span class="tag-ok">✓ no redirect</span>
+        <div class="unchanged-edit-wrap hidden" id="unch-warn-${id}">
+          <span class="unchanged-warning">⚠️ this URL doesn't need a redirect — are you sure?</span>
+          <button class="btn-sm btn-ok btn-override-confirm" data-old="${esc(row.old)}" title="Yes, add a redirect">yes</button>
+          <button class="btn-sm btn-cancel btn-override-cancel" data-old="${esc(row.old)}" title="Cancel">no</button>
+        </div>
+        <button class="btn-edit btn-unchanged-edit" data-old="${esc(row.old)}" title="Manually add a redirect for this URL">✎</button>`;
+    }
+
+    // Show warning on pencil click
+    div.querySelector('.btn-unchanged-edit')?.addEventListener('click', e => {
+      const id = cssId(e.currentTarget.dataset.old);
+      div.querySelector(`#unch-warn-${id}`).classList.toggle('hidden');
+    });
+
+    // Confirm override — open edit input
+    div.querySelector('.btn-override-confirm')?.addEventListener('click', e => {
+      const o = e.currentTarget.dataset.old;
+      const r = state.rows.find(r => r.old === o);
+      r.override = r.old; // seed with own URL so input isn't blank
+      snapshot();
+      render();
+      // After render, focus the new edit input
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`edit-${cssId(o)}`);
+        if (el) { el.classList.remove('hidden'); el.querySelector('input').select(); }
+      });
+    });
+
+    // Cancel warning
+    div.querySelector('.btn-override-cancel')?.addEventListener('click', e => {
+      const id = cssId(e.currentTarget.dataset.old);
+      div.querySelector(`#unch-warn-${id}`)?.classList.add('hidden');
+    });
+
+    // Edit existing override
+    div.querySelector('.btn-override-edit')?.addEventListener('click', e => {
+      const id = cssId(e.currentTarget.dataset.old);
+      document.getElementById(`edit-${id}`)?.classList.toggle('hidden');
+    });
+
+    // Save override
+    div.querySelector('.btn-ok')?.addEventListener('click', e => {
+      const o = e.currentTarget.dataset.old;
+      const input = document.getElementById(`edit-${cssId(o)}`)?.querySelector('input');
+      const val = input?.value.trim();
+      if (!val) return;
+      snapshot();
+      const r = state.rows.find(r => r.old === o);
+      r.override = val;
+      render();
+    });
+
+    // Clear override
+    div.querySelector('.btn-override-clear')?.addEventListener('click', e => {
+      snapshot();
+      const r = state.rows.find(r => r.old === e.currentTarget.dataset.old);
+      r.override = null;
+      render();
+    });
+
+    // Cancel edit
+    div.querySelector('.btn-cancel:not(.btn-override-cancel):not(.btn-override-clear)')?.addEventListener('click', e => {
+      document.getElementById(`edit-${cssId(e.currentTarget.dataset.old)}`)?.classList.add('hidden');
+    });
+
+    div.querySelector('.edit-input')?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') div.querySelector('.btn-ok').click();
+      if (e.key === 'Escape') div.querySelector(`#edit-${cssId(e.currentTarget.dataset.old)}`)?.classList.add('hidden');
+    });
+
     return div;
   }
   div.className = `row row-redirect${row.confirmed?' row-confirmed':''}`;
@@ -1824,20 +1960,15 @@ async function runValidator() {
   document.getElementById('validator-empty').classList.add('hidden');
   document.getElementById('validator-results').classList.remove('hidden');
 
-  const oldBase = normaliseBase(document.getElementById('val-old-base').value.trim());
-  const newBase = normaliseBase(document.getElementById('val-new-base').value.trim());
+  const oldBase = normaliseBase(document.getElementById('old-base').value.trim());
+  const newBase = normaliseBase(document.getElementById('new-base').value.trim());
   const checksEl = document.getElementById('validator-checks');
   checksEl.innerHTML = '<div class="val-check skip"><span class="val-check-icon">⏳</span><span class="val-check-label">Running checks…</span></div>';
 
   // --- Static checks (instant) ---
   const loops     = detectLoops();
   const chains    = detectChains();
-  const destMap   = {};
-  const dupes     = [];
-  confirmed.forEach(r => {
-    if (destMap[r.confirmed]) dupes.push({ old: r.old, dest: r.confirmed, clash: destMap[r.confirmed] });
-    else destMap[r.confirmed] = r.old;
-  });
+  const mergers   = detectMergers();
   const missing = confirmed.filter(r => !r.confirmed || r.confirmed.trim() === '');
 
   // --- Live checks (async, optional) ---
@@ -1869,15 +2000,15 @@ async function runValidator() {
 
   checks.push(loops.length === 0
     ? { state: 'pass', icon: '✅', label: 'No redirect loops', detail: '' }
-    : { state: 'fail', icon: '❌', label: `${loops.length} loop${loops.length!==1?'s':''} detected`, detail: 'Fix in Health → Looper' });
+    : { state: 'fail', icon: '❌', label: `${loops.length} loop${loops.length!==1?'s':''} detected`, detail: 'Fix in Analysis → Looper' });
 
   checks.push(chains.length === 0
     ? { state: 'pass', icon: '✅', label: 'No redirect chains', detail: '' }
-    : { state: 'warn', icon: '⚠️', label: `${chains.length} chain${chains.length!==1?'s':''} detected`, detail: 'Fix in Health → Hopper' });
+    : { state: 'warn', icon: '⚠️', label: `${chains.length} chain${chains.length!==1?'s':''} detected`, detail: 'Fix in Analysis → Hopper' });
 
-  checks.push(dupes.length === 0
-    ? { state: 'pass', icon: '✅', label: 'No duplicate destinations', detail: '' }
-    : { state: 'fail', icon: '❌', label: `${dupes.length} duplicate destination${dupes.length!==1?'s':''}`, detail: 'Multiple old URLs pointing to same destination' });
+  checks.push(mergers.length === 0
+    ? { state: 'pass', icon: '✅', label: 'No merged destinations', detail: '' }
+    : { state: 'warn', icon: '⚠️', label: `${mergers.length} destination${mergers.length!==1?'s':''} with multiple sources`, detail: 'May be intentional — review in Analysis → Merger' });
 
   checks.push(missing.length === 0
     ? { state: 'pass', icon: '✅', label: 'All redirects have destinations', detail: '' }
@@ -1926,7 +2057,7 @@ async function runValidator() {
 
   if (loops.length) allIssues.push({ title: '🔄 Loops', items: loops.map(l => ({ tag: 'loop', text: l.urls.join(' → ') })) });
   if (chains.length) allIssues.push({ title: '🔗 Chains', items: chains.map(c => ({ tag: `${c.chain.length} hops`, text: c.chain.concat(c.destination).join(' → ') })) });
-  if (dupes.length) allIssues.push({ title: '📋 Duplicate Destinations', items: dupes.map(d => ({ tag: 'duplicate', text: `${d.old} and ${d.clash} → ${d.dest}` })) });
+  if (mergers.length) allIssues.push({ title: '🔀 Mergers', items: mergers.map(m => ({ tag: `${m.sources.length} sources`, text: `${m.sources.join(', ')} → ${m.dest}` })) });
   if (liveResults?.oldErrors.length) allIssues.push({ title: '🔴 Old URLs Not Resolving', items: liveResults.oldErrors.map(e => ({ tag: e.status, text: e.url })) });
   if (liveResults?.destErrors.length) allIssues.push({ title: '🔴 Broken Destinations', items: liveResults.destErrors.map(e => ({ tag: e.status, text: `${e.from} → ${e.url}` })) });
 
@@ -1974,7 +2105,6 @@ document.getElementById('btn-download-pdf').addEventListener('click', () => {
   const win = window.open('', '_blank');
   win.document.write(html);
   win.document.close();
-  win.addEventListener('load', () => { win.focus(); win.print(); });
 });
 
 document.getElementById('btn-copy-report').addEventListener('click', () => {
@@ -2156,6 +2286,53 @@ document.getElementById('btn-check-chains').addEventListener('click', () => {
   const chains = detectChains();
   renderHopperResults(chains);
 });
+
+// ── Merger (duplicate destination detector) ────────────────────────────────────
+function detectMergers() {
+  const destMap = {}; // destination → [old URLs]
+  state.rows.forEach(r => {
+    if (r.status === 'redirect' && r.confirmed) {
+      if (!destMap[r.confirmed]) destMap[r.confirmed] = [];
+      destMap[r.confirmed].push(r.old);
+    }
+  });
+  // Only flag destinations with more than one old URL
+  return Object.entries(destMap)
+    .filter(([, sources]) => sources.length > 1)
+    .map(([dest, sources]) => ({ dest, sources }));
+}
+
+function renderMergerResults(mergers) {
+  const results  = document.getElementById('merger-results');
+  const summary  = document.getElementById('merger-summary');
+  const rows     = document.getElementById('merger-rows');
+  results.classList.remove('hidden');
+  rows.innerHTML = '';
+
+  if (mergers.length === 0) {
+    summary.textContent = '✓ No mergers found — every destination has a unique source.';
+    summary.style.color = 'var(--tag-ok-text)';
+    return;
+  }
+
+  summary.textContent = `${mergers.length} destination${mergers.length!==1?'s':''} with multiple sources — review to confirm these are intentional.`;
+  summary.style.color = 'var(--cors-text)';
+
+  mergers.forEach(({ dest, sources }) => {
+    const div = document.createElement('div');
+    div.className = 'hopper-chain'; // reuse hopper styling
+    div.innerHTML = `
+      <div class="hopper-chain-label">${sources.length} sources → 1 destination</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:0.71rem;color:var(--text-body);margin-bottom:0.3rem;">${esc(dest)}</div>
+      ${sources.map(s => `<div style="font-family:'IBM Plex Mono',monospace;font-size:0.69rem;color:var(--text-muted);padding:0.15rem 0 0 0.5rem;">← ${esc(s)}</div>`).join('')}`;
+    rows.appendChild(div);
+  });
+}
+
+document.getElementById('btn-check-mergers').addEventListener('click', () => {
+  const mergers = detectMergers();
+  renderMergerResults(mergers);
+});
 let spiderState = {
   running: false,
   queue: [],
@@ -2303,16 +2480,39 @@ function downloadWorker() {
 }
 
 function updateSpiderStats() {
-  const total = spiderState.results.length;
-  const ok = spiderState.results.filter(r => r.ok === true).length;
-  const err = spiderState.results.filter(r => r.ok === false).length;
+  const total   = spiderState.results.length;
+  const ok      = spiderState.results.filter(r => r.ok === true).length;
+  const err     = spiderState.results.filter(r => r.ok === false).length;
   const blocked = spiderState.results.filter(r => r.ok === null).length;
+  const queued  = spiderState.queue.length;
+
   document.getElementById('spider-stat-total').textContent = total;
   document.getElementById('spider-stat-ok').textContent = ok;
   document.getElementById('spider-stat-error').textContent = err;
   document.getElementById('spider-stat-blocked').textContent = blocked;
-  document.getElementById('spider-status').textContent =
-    spiderState.running ? `crawling… ${total} found, ${spiderState.queue.length} queued` : `done — ${total} URLs found`;
+
+  // Progress bar
+  const fill = document.getElementById('spider-progress-fill');
+  const statusEl = document.getElementById('spider-status');
+  const emojiEl = document.getElementById('spider-progress-emoji');
+  const depthEl = document.getElementById('spider-depth-info');
+  const queueEl = document.getElementById('spider-queue-info');
+
+  if (spiderState.running) {
+    statusEl.textContent = `crawling… ${total} found`;
+    fill.classList.add('crawling');
+    emojiEl.textContent = total % 2 === 0 ? '🕷️' : '🕸️';
+    depthEl.textContent = `${total} crawled`;
+    queueEl.textContent = `${queued} queued`;
+  } else if (total > 0) {
+    statusEl.textContent = `done — ${total} URLs found`;
+    fill.classList.remove('crawling');
+    fill.style.width = '100%';
+    emojiEl.textContent = '✅';
+    depthEl.textContent = `${ok} ok · ${err} errors · ${blocked} blocked`;
+    queueEl.textContent = '';
+  }
+
   renderSpiderRows();
 }
 
@@ -2333,7 +2533,10 @@ async function runSpider() {
   spiderState = { running: true, queue: [normaliseUrl(startUrl, startUrl)], visited: new Set(), results: [], base: origin };
   document.getElementById('spider-results').classList.remove('hidden');
   document.getElementById('spider-rows').innerHTML = '';
-  document.getElementById('spider-status').classList.remove('hidden');
+  document.getElementById('spider-progress-wrap').classList.remove('hidden');
+  document.getElementById('spider-progress-fill').style.width = '0%';
+  document.getElementById('spider-progress-fill').classList.add('crawling');
+  document.getElementById('spider-progress-emoji').textContent = '🕷️';
   document.getElementById('btn-spider-start').disabled = true;
   document.getElementById('btn-spider-stop').classList.remove('hidden');
   updateSpiderStats();
@@ -2397,6 +2600,8 @@ function stopSpider() {
   spiderState.running = false;
   document.getElementById('btn-spider-stop').classList.add('hidden');
   document.getElementById('btn-spider-start').disabled = false;
+  document.getElementById('spider-progress-fill').classList.remove('crawling');
+  document.getElementById('spider-progress-fill').style.width = '100%';
   updateSpiderStats();
 }
 
