@@ -261,7 +261,26 @@
     .page-heading-title { font-family: 'IBM Plex Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--text-strong); letter-spacing: -0.02em; margin-bottom: 0.25rem; }
     .page-heading-sub { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.78rem; color: var(--text-muted); }
 
-    /* footer */
+    /* home page */
+    .home-hero { text-align: center; padding: 3rem 1rem 2rem; }
+    .home-greeting { font-family: 'IBM Plex Mono', monospace; font-size: 1.4rem; font-weight: 600; color: var(--text-strong); margin-bottom: 0.75rem; letter-spacing: -0.02em; }
+    .home-fact { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.82rem; color: var(--text-muted); max-width: 480px; margin: 0 auto; line-height: 1.7; }
+    .home-section-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.1rem; }
+    .home-session-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; display: flex; align-items: center; gap: 1.25rem; }
+    .home-session-card:hover { border-color: #008080; box-shadow: 0 0 0 1px #008080; }
+    .home-session-info { flex: 1; min-width: 0; }
+    .home-session-name { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; font-weight: 600; color: var(--text-title); margin-bottom: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .home-session-meta { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--text-muted); }
+    .home-session-stats { display: flex; gap: 1rem; flex-shrink: 0; flex-wrap: wrap; }
+    .home-stat { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; text-align: center; }
+    .home-stat-n { font-size: 1.1rem; font-weight: 600; display: block; line-height: 1.1; }
+    .home-stat-l { color: var(--text-muted); font-size: 0.6rem; }
+    .home-session-card .home-arrow { color: var(--text-dimmer); font-size: 0.9rem; flex-shrink: 0; }
+    .home-session-card:hover .home-arrow { color: #008080; }
+
+    /* share button */
+    .btn-share { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 3px; padding: 0.3rem 0.75rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .btn-share:hover { border-color: #008080; color: #008080; }
     .waypoint-footer { text-align: center; padding: 2rem 1rem 1.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--text-dimmer); }
     .footer-divider { margin: 0 0.5rem; }
     .footer-link { color: var(--text-dimmer); text-decoration: none; transition: color 0.15s; }
@@ -442,7 +461,7 @@
           <!-- centre dot -->
           <circle cx="16" cy="16" r="2.2" fill="#008080"/>
         </svg>
-        <h1>Waypoint</h1>
+        <h1 id="btn-home" style="cursor:pointer;" title="Go home">Waypoint</h1>
       </div>
       <span class="subtitle">// site migration toolkit</span>
     </div>
@@ -476,6 +495,7 @@
           <div class="session-btns">
             <button class="btn-session btn-undo" id="btn-undo" disabled title="Undo (Ctrl+Z)">↩ Undo</button>
             <button class="btn-session btn-redo" id="btn-redo" disabled title="Redo (Ctrl+Y)">↪ Redo</button>
+            <button class="btn-share" id="btn-share-session" title="Copy a shareable link to this session">⇪ Share</button>
             <button class="btn-session save" id="btn-save-session">↓ Save session</button>
             <label class="btn-session" id="btn-load-label" title="Load a previously saved session">↑ Load session<input type="file" id="btn-load-session" accept=".json" hidden /></label>
           </div>
@@ -912,6 +932,24 @@
     </div>
   </div>
 
+  <!-- ── PAGE: Home ── -->
+  <div id="page-home" class="hidden">
+    <div class="home-hero">
+      <div class="home-greeting" id="home-greeting"></div>
+      <div class="home-fact" id="home-fact"></div>
+      <button class="btn-check" id="btn-new-session" style="margin-top:1.5rem;">+ new session</button>
+    </div>
+
+    <div id="home-recent" class="hidden" style="margin-top:2rem;">
+      <div class="home-section-title">Recent sessions</div>
+      <div id="home-session-list" style="display:flex;flex-direction:column;gap:0.65rem;margin-top:0.75rem;"></div>
+    </div>
+
+    <div id="home-empty" class="placeholder hidden">
+      No sessions yet — start a new one above.
+    </div>
+  </div><!-- end #page-home -->
+
 </div><!-- end #app -->
 
 <footer class="waypoint-footer">
@@ -1014,6 +1052,7 @@ btnTheme.addEventListener('click', () => {
 function switchPage(page) {
   state.page = page;
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.page === page));
+  document.getElementById('page-home').classList.toggle('hidden', page !== 'home');
   document.getElementById('page-mapper').classList.toggle('hidden', page !== 'mapper');
   document.getElementById('page-mapper-results').classList.toggle('hidden', page !== 'mapper');
   document.getElementById('page-checker').classList.toggle('hidden', page !== 'checker');
@@ -2129,6 +2168,242 @@ document.querySelectorAll('.export-format-bar .pill').forEach(btn => {
       p.classList.toggle('active', p.dataset.format === state.exportFormat));
   });
 });
+
+// ── Compression helpers (URI-safe base64 of JSON) ─────────────────────────────
+// We use a simple but effective approach: JSON → UTF-8 → base64url
+// For large sessions this is fine; we add a note about URL length if needed.
+const LZString = {
+  compressToEncodedURIComponent(str) {
+    try {
+      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        (_, p1) => String.fromCharCode('0x' + p1)))
+        .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    } catch { return ''; }
+  },
+  decompressFromEncodedURIComponent(b64) {
+    try {
+      const s = b64.replace(/-/g,'+').replace(/_/g,'/');
+      const pad = s.length % 4 ? '='.repeat(4 - s.length % 4) : '';
+      return decodeURIComponent(atob(s + pad).split('').map(
+        c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+    } catch { return null; }
+  }
+};
+
+// ── Session history ────────────────────────────────────────────────────────────
+const HISTORY_KEY = 'waypoint-history';
+const HISTORY_MAX = 5;
+
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch { return []; }
+}
+
+function saveToHistory() {
+  if (!state.rows.length) return;
+  const entry = {
+    name: document.getElementById('session-name').value.trim() || 'Untitled project',
+    savedAt: new Date().toISOString(),
+    totalUrls: state.rows.length,
+    confirmed: state.rows.filter(r => r.confirmed).length,
+    needsRedirect: state.rows.filter(r => r.status === 'redirect').length,
+    warnings: state.rows.filter(r => r.loopChain || r.chainFlag).length,
+    sessionData: {
+      version: 1,
+      savedAt: new Date().toISOString(),
+      name: document.getElementById('session-name').value.trim() || '',
+      oldInput: document.getElementById('old-input').value,
+      newInput: document.getElementById('new-input').value,
+      oldBase: document.getElementById('old-base').value || '',
+      newBase: document.getElementById('new-base').value || '',
+      rules: state.rules,
+      rows: state.rows,
+    }
+  };
+  const hist = getHistory().filter(h => !(h.name === entry.name && Math.abs(new Date(h.savedAt) - new Date(entry.savedAt)) < 2000));
+  hist.unshift(entry);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(hist.slice(0, HISTORY_MAX)));
+}
+
+function loadSessionData(session) {
+  document.getElementById('old-input').value = session.oldInput || '';
+  document.getElementById('new-input').value = session.newInput || '';
+  document.getElementById('old-base').value = session.oldBase || '';
+  document.getElementById('new-base').value = session.newBase || '';
+  document.getElementById('session-name').value = session.name || '';
+  state.rules = session.rules || [];
+  state.rows = session.rows || [];
+  state.tab = 'map'; state.filter = 'all'; state.search = '';
+  history.stack = []; history.cursor = -1;
+  if (state.rows.length) snapshot();
+  renderRules(); updateRulePreview(); checkAnalyseBtn(); updateCheckBtn();
+  if (state.rows.length) {
+    document.getElementById('results').classList.remove('hidden');
+    document.getElementById('placeholder').classList.add('hidden');
+    document.getElementById('url-count').textContent = `${state.rows.length} URLs loaded`;
+  }
+  updateTimestamp(session.savedAt || null);
+  render();
+}
+
+// ── Home screen ────────────────────────────────────────────────────────────────
+const GREETINGS = [
+  "Hey, you're back! 👋",
+  "Welcome back, redirect wizard 🧙",
+  "Look who's here — the migration master 💪",
+  "Oh hey! Ready to wrangle some URLs? 🐊",
+  "Back again! Your redirects missed you 🗺️",
+  "Hello, you absolute legend 🌟",
+  "Good to see you — let's get mapping ✨",
+  "You showed up. That's already the hardest part 🎉",
+  "The redirects won't fix themselves... but you will 🔥",
+  "Another day, another migration. You've got this 💎",
+  "Ah, the migration hero returns 🦸",
+  "URLs in disarray? Not for long 🫡",
+  "Back at it — your future self will thank you 🙌",
+  "Ready to make the internet 1% less broken? Let's go 🌐",
+];
+
+const FACTS = [
+  // Redirects & technical SEO
+  "A 301 redirect passes ~99% of link equity to the destination — a 302 passes almost none. Choose wisely.",
+  "The HTTP 301 status code has existed since 1992. Older than most of the web it redirects.",
+  "Google can take weeks to fully process a site migration, even with perfect redirects in place.",
+  "A redirect chain of just 3 hops can noticeably slow page load times for users and crawlers alike.",
+  "The record for most redirects in a single chain? Probably your legacy CMS. We don't talk about it.",
+  "301 redirects were once said to pass only 85% of PageRank. That myth persisted for years. It's not true.",
+  "Site migrations are in the top 3 causes of sudden organic traffic drops. You're preventing one right now.",
+  "Canonicalisation, hreflang, and redirects are the holy trinity of technical SEO. You're nailing one of them.",
+  "A well-planned redirect map is a love letter to your future self.",
+  "404s cost real money in lost traffic and trust. Every redirect you confirm here is saving someone's day.",
+  "Redirecting URLs is basically time travel for the web. That makes you a time lord 🌀",
+  // Digital marketing
+  "The average person sees between 4,000 and 10,000 ads per day. They remember about 4.",
+  "Email marketing still has a higher ROI than social media for most industries. The 90s called — they were right.",
+  "50% of search queries are four words or longer. Short keywords are a bloodbath. Long tail is where it's at.",
+  "Google processes around 8.5 billion searches per day. Your client's site is somewhere in that number.",
+  "The first result on Google gets ~27% of all clicks. Position 2 gets ~15%. It falls off a cliff from there.",
+  "Page speed is a ranking factor — but more importantly, users will leave if your page takes more than 3 seconds.",
+  "Dark patterns in UX are increasingly being legislated against. Designing for humans is good ethics and good business.",
+  "Content that answers a question directly is 2x more likely to appear in a featured snippet. Be helpful.",
+  "'Near me' searches have grown by 900% over recent years. Local SEO isn't optional for bricks-and-mortar.",
+  "The average B2B buyer does 12 searches before engaging with a brand's website. First impressions start before they arrive.",
+  "A 1 second delay in page load time can result in a 7% reduction in conversions. Milliseconds matter.",
+  "Instagram captions can be up to 2,200 characters. Virtually nobody reads past the first line.",
+  "83% of marketers say video is more important than ever. The other 17% haven't updated their analytics.",
+  "'Bounce rate' is one of the most misunderstood metrics in digital marketing. A high bounce rate on a contact page isn't bad.",
+  "The algorithm changes. User intent doesn't. Build for people first.",
+  // Compliments
+  "Fun fact: you're currently using a tool more capable than what most agencies charge thousands to provide manually.",
+  "The average enterprise site migration takes 3–6 months. You're already ahead of the curve.",
+  "You clearly know your stuff — most people would have given up and used a spreadsheet by now.",
+  "The fact that you care about doing this properly is rare. It matters more than you know.",
+  "You're the kind of person who reads the documentation. That's genuinely rare and underrated.",
+  "Whoever your client is, they're lucky to have someone this thorough on their side.",
+  "Attention to detail is a superpower in digital marketing. You clearly have it.",
+  "Most people skip the QA step entirely. You're not most people.",
+];
+
+function renderHomePage() {
+  document.getElementById('home-greeting').textContent = GREETINGS[Math.floor(Math.random() * GREETINGS.length)];
+  document.getElementById('home-fact').textContent = FACTS[Math.floor(Math.random() * FACTS.length)];
+
+  const hist = getHistory();
+  const listEl = document.getElementById('home-session-list');
+  listEl.innerHTML = '';
+
+  if (!hist.length) {
+    document.getElementById('home-recent').classList.add('hidden');
+    document.getElementById('home-empty').classList.remove('hidden');
+    return;
+  }
+
+  document.getElementById('home-recent').classList.remove('hidden');
+  document.getElementById('home-empty').classList.add('hidden');
+
+  const pad = n => String(n).padStart(2,'0');
+  hist.forEach(entry => {
+    const d = new Date(entry.savedAt);
+    const dateStr = `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const pct = entry.needsRedirect > 0 ? Math.round((entry.confirmed / entry.needsRedirect) * 100) : 100;
+
+    const card = document.createElement('div');
+    card.className = 'home-session-card';
+    card.innerHTML = `
+      <div class="home-session-info">
+        <div class="home-session-name">${esc(entry.name)}</div>
+        <div class="home-session-meta">last updated ${dateStr}</div>
+      </div>
+      <div class="home-session-stats">
+        <div class="home-stat"><span class="home-stat-n" style="color:#008080">${entry.totalUrls}</span><span class="home-stat-l">total</span></div>
+        <div class="home-stat"><span class="home-stat-n" style="color:var(--tag-ok-text)">${entry.confirmed}</span><span class="home-stat-l">confirmed</span></div>
+        <div class="home-stat"><span class="home-stat-n" style="color:var(--confirmed-color)">${pct}%</span><span class="home-stat-l">complete</span></div>
+        ${entry.warnings > 0 ? `<div class="home-stat"><span class="home-stat-n" style="color:#c86a5a">${entry.warnings}</span><span class="home-stat-l">warnings</span></div>` : ''}
+      </div>
+      <span class="home-arrow">→</span>`;
+    card.addEventListener('click', () => { loadSessionData(entry.sessionData); switchPage('mapper'); });
+    listEl.appendChild(card);
+  });
+}
+
+document.getElementById('btn-home').addEventListener('click', () => {
+  renderHomePage();
+  switchPage('home');
+});
+
+document.getElementById('btn-new-session').addEventListener('click', () => switchPage('mapper'));
+
+// ── Share links ────────────────────────────────────────────────────────────────
+function buildShareLink() {
+  const session = {
+    version: 1, savedAt: new Date().toISOString(),
+    name: document.getElementById('session-name').value.trim() || '',
+    oldInput: document.getElementById('old-input').value,
+    newInput: document.getElementById('new-input').value,
+    oldBase: document.getElementById('old-base').value,
+    newBase: document.getElementById('new-base').value,
+    rules: state.rules, rows: state.rows,
+  };
+  const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(session));
+  return `${location.origin}${location.pathname}#session=${compressed}`;
+}
+
+document.getElementById('btn-share-session').addEventListener('click', () => {
+  if (!state.rows.length) { alert('Analyse some URLs first before sharing.'); return; }
+  const link = buildShareLink();
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = document.getElementById('btn-share-session');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '⇪ Share', 2000);
+  });
+});
+
+// Check for share link on load, otherwise show home
+(function() {
+  const hash = location.hash;
+  if (hash.startsWith('#session=')) {
+    try {
+      const json = LZString.decompressFromEncodedURIComponent(hash.slice('#session='.length));
+      if (!json) throw new Error('empty');
+      const session = JSON.parse(json);
+      if (!session.version || !session.rows) throw new Error('invalid');
+      loadSessionData(session);
+      saveToHistory();
+      history.replaceState(null, '', location.pathname);
+      switchPage('mapper');
+      return;
+    } catch(e) { console.warn('Could not load shared session:', e); }
+  }
+  // Default: show home screen
+  renderHomePage();
+  switchPage('home');
+})();
+
+// Auto-save to history after analysis
+document.getElementById('btn-analyse').addEventListener('click', () => {
+  setTimeout(saveToHistory, 600);
+}, true);
+
+// ── Loop detection ─────────────────────────────────────────────────────────────
 function detectLoops() {
   // Build a map of old → confirmed
   const redirectMap = {};
