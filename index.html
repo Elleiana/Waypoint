@@ -799,18 +799,26 @@
             </div>
           </div>
           <div class="workbench-divider"></div>
-          <div class="workbench-section-label" style="margin-bottom:0.5rem;margin-top:0.85rem;">Exclude from crawl</div>
-          <div style="display:flex;flex-direction:column;gap:0.5rem;">
-            <label class="spider-opt-row"><input type="checkbox" id="spider-excl-pagination" checked /> <span>Pagination <span class="rule-preview">?page=, /page/, /p/</span></span></label>
-            <label class="spider-opt-row"><input type="checkbox" id="spider-excl-assets" checked /> <span>Static assets <span class="rule-preview">.css, .js, .png, .jpg, .gif, .svg, .ico, .woff, .pdf</span></span></label>
-            <label class="spider-opt-row"><input type="checkbox" id="spider-excl-dev" checked /> <span>Dev &amp; system URLs <span class="rule-preview">wp-admin, wp-json, wp-login, /feed, /xmlrpc, /.well-known</span></span></label>
-            <label class="spider-opt-row"><input type="checkbox" id="spider-excl-query" /> <span>All query strings <span class="rule-preview">any URL containing ?</span></span></label>
-            <label class="spider-opt-row"><input type="checkbox" id="spider-excl-hash" checked /> <span>Hash/anchor links <span class="rule-preview">URLs containing #</span></span></label>
-          </div>
           <div style="margin-top:0.85rem;">
-            <div class="workbench-section-label" style="margin-bottom:0.3rem;">Custom exclude patterns</div>
-            <div class="workbench-section-help">One pattern per line. Any URL containing a pattern will be skipped.</div>
-            <textarea id="spider-excl-custom" class="import-textarea" style="height:70px;" placeholder="/members/&#10;/checkout/&#10;/cart/"></textarea>
+            <div class="workbench-section-label" style="margin-bottom:0.5rem;">Exclude from crawl</div>
+            <div style="display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap;">
+              <div style="flex:1;min-width:220px;">
+                <div class="workbench-section-label" style="margin-bottom:0.3rem;">Filters</div>
+                <div class="workbench-section-help" style="margin-bottom:0.4rem;">Tick anything you don't want in your results.</div>
+                <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                  <label class="spider-opt-row"><input type="checkbox" id="spider-excl-pagination" checked /> <span>Pagination <span class="rule-preview">?page=, /page/, /p/</span></span></label>
+                  <label class="spider-opt-row"><input type="checkbox" id="spider-excl-assets" checked /> <span>Media &amp; files <span class="rule-preview">.png, .jpg, .gif, .svg, .ico, .pdf, .zip, .mp4</span></span></label>
+                  <label class="spider-opt-row"><input type="checkbox" id="spider-excl-dev" checked /> <span>Dev &amp; system URLs <span class="rule-preview">wp-admin, wp-json, .css, .js, .woff, /feed</span></span></label>
+                  <label class="spider-opt-row"><input type="checkbox" id="spider-excl-query" /> <span>All query strings <span class="rule-preview">any URL containing ?</span></span></label>
+                  <label class="spider-opt-row"><input type="checkbox" id="spider-excl-hash" checked /> <span>Hash/anchor links <span class="rule-preview">URLs containing #</span></span></label>
+                </div>
+              </div>
+              <div style="flex:1;min-width:180px;">
+                <div class="workbench-section-label" style="margin-bottom:0.3rem;">Custom patterns</div>
+                <div class="workbench-section-help" style="margin-bottom:0.4rem;">One per line — any URL containing the pattern will be skipped.</div>
+                <textarea id="spider-excl-custom" class="import-textarea" style="height:116px;min-height:unset;" placeholder="/members/&#10;/checkout/&#10;/cart/"></textarea>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -818,7 +826,7 @@
 
     <!-- Spider results -->
     <div id="spider-results" class="hidden" style="margin-top:1rem;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
         <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
           <div class="stat"><strong id="spider-stat-total" style="color:#008080">0</strong> discovered</div>
           <div class="stat"><strong id="spider-stat-ok" style="color:#5aab72">0</strong> ok</div>
@@ -833,13 +841,13 @@
       </div>
 
       <!-- Exclusion summary accordion -->
-      <div id="spider-exclusion-summary" class="hidden" style="margin-bottom:0.85rem;">
+      <div id="spider-exclusion-summary" class="hidden" style="margin-top:0.75rem;margin-bottom:0.75rem;">
         <div style="border:1px solid var(--border-soft);border-radius:6px;overflow:hidden;">
-          <button id="spider-excl-summary-toggle" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.85rem;background:var(--bg-input);border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--text-muted);text-align:left;" onclick="document.getElementById('spider-excl-summary-body').classList.toggle('hidden');this.querySelector('.excl-arrow').textContent=document.getElementById('spider-excl-summary-body').classList.contains('hidden')?'▶':'▼';">
+          <button id="spider-excl-summary-toggle" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.85rem;background:var(--bg-input);border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--text-muted);text-align:left;" onclick="const b=document.getElementById('spider-excl-summary-body');b.classList.toggle('hidden');this.querySelector('.excl-arrow').textContent=b.classList.contains('hidden')?'◀':'▼';">
             <span id="spider-excl-summary-label">0 URLs excluded by Workbench filters</span>
-            <span class="excl-arrow" style="font-size:0.6rem;">▶</span>
+            <span class="excl-arrow" style="font-size:0.6rem;">◀</span>
           </button>
-          <div id="spider-excl-summary-body" class="hidden" style="padding:0.75rem 0.85rem;display:flex;flex-direction:column;gap:0.5rem;">
+          <div id="spider-excl-summary-body" class="hidden" style="padding:0.75rem 0.85rem;">
             <div id="spider-excl-summary-rows"></div>
           </div>
         </div>
@@ -3347,7 +3355,6 @@ async function runSpider() {
 
 function renderExclusionSummary() {
   const ex = spiderState.excluded;
-  const rows = [];
 
   const totalAssets = Object.values(ex.assets).reduce((s, a) => s + a.length, 0);
   const totalCustom = Object.values(ex.custom).reduce((s, a) => s + a.length, 0);
@@ -3356,35 +3363,56 @@ function renderExclusionSummary() {
   const wrap = document.getElementById('spider-exclusion-summary');
   if (grandTotal === 0) { wrap.classList.add('hidden'); return; }
   wrap.classList.remove('hidden');
-  document.getElementById('spider-excl-summary-label').textContent = `${grandTotal} URL${grandTotal !== 1 ? 's' : ''} excluded by Workbench filters`;
+  document.getElementById('spider-excl-summary-label').textContent = `${grandTotal.toLocaleString()} URL${grandTotal !== 1 ? 's' : ''} excluded by Workbench filters`;
 
   const rowsEl = document.getElementById('spider-excl-summary-rows');
   rowsEl.innerHTML = '';
 
-  const makeExclRow = (label, count, detail) => {
-    const d = document.createElement('div');
-    d.style.cssText = 'font-family:\'IBM Plex Mono\',monospace;font-size:0.7rem;display:flex;align-items:baseline;gap:0.6rem;';
-    d.innerHTML = `<strong style="color:var(--text-title);min-width:36px;text-align:right;">${count}</strong><span style="color:var(--text-muted);">${label}</span>${detail ? `<span style="color:var(--text-dimmer);font-size:0.63rem;">${detail}</span>` : ''}`;
-    rowsEl.appendChild(d);
-  };
+  // Groups: each is { label, count, children: [{label, count}] }
+  const groups = [];
 
-  if (ex.pagination.length) makeExclRow('pagination URLs', ex.pagination.length, '');
+  if (ex.pagination.length)
+    groups.push({ label: 'Pagination', count: ex.pagination.length, children: [] });
+
   if (totalAssets) {
-    makeExclRow('static assets', totalAssets, '');
-    // Break down by extension
-    Object.entries(ex.assets).sort((a,b) => b[1].length - a[1].length).forEach(([ext, urls]) => {
-      makeExclRow(`.${ext}`, urls.length, '');
+    groups.push({
+      label: 'Media & files', count: totalAssets,
+      children: Object.entries(ex.assets).sort((a,b) => b[1].length - a[1].length)
+        .map(([ext, urls]) => ({ label: `.${ext}`, count: urls.length }))
     });
   }
-  if (ex.dev.length)   makeExclRow('dev / system URLs', ex.dev.length, '');
-  if (ex.query.length) makeExclRow('query string URLs', ex.query.length, '');
-  if (ex.hash.length)  makeExclRow('hash / anchor URLs', ex.hash.length, '');
+
+  if (ex.dev.length)
+    groups.push({ label: 'Dev & system URLs', count: ex.dev.length, children: [] });
+
+  if (ex.query.length)
+    groups.push({ label: 'Query string URLs', count: ex.query.length, children: [] });
+
+  if (ex.hash.length)
+    groups.push({ label: 'Hash / anchor URLs', count: ex.hash.length, children: [] });
+
   if (totalCustom) {
-    makeExclRow('custom pattern matches', totalCustom, '');
-    Object.entries(ex.custom).forEach(([pat, urls]) => {
-      makeExclRow(`"${pat}"`, urls.length, '');
+    groups.push({
+      label: 'Custom pattern matches', count: totalCustom,
+      children: Object.entries(ex.custom).map(([pat, urls]) => ({ label: `"${pat}"`, count: urls.length }))
     });
   }
+
+  groups.forEach((group, gi) => {
+    // Category header row
+    const header = document.createElement('div');
+    header.style.cssText = 'font-family:\'IBM Plex Mono\',monospace;font-size:0.7rem;display:flex;align-items:baseline;gap:0.6rem;' + (gi > 0 ? 'margin-top:0.65rem;padding-top:0.65rem;border-top:1px solid var(--border-soft);' : '');
+    header.innerHTML = `<strong style="color:#008080;min-width:42px;text-align:right;">${group.count.toLocaleString()}</strong><span style="color:var(--text-title);font-weight:600;">${group.label}</span>`;
+    rowsEl.appendChild(header);
+
+    // Child rows (extension breakdown etc.)
+    group.children.forEach(child => {
+      const row = document.createElement('div');
+      row.style.cssText = 'font-family:\'IBM Plex Mono\',monospace;font-size:0.68rem;display:flex;align-items:baseline;gap:0.6rem;margin-top:0.25rem;padding-left:0.5rem;';
+      row.innerHTML = `<strong style="color:var(--text-muted);min-width:42px;text-align:right;">${child.count.toLocaleString()}</strong><span style="color:var(--text-dimmer);">${child.label}</span>`;
+      rowsEl.appendChild(row);
+    });
+  });
 }
 
 function stopSpider() {
@@ -3435,7 +3463,7 @@ function shouldExcludeUrl(url, log = false) {
     return true;
   }
   if (excAssets) {
-    const m = url.match(/\.(css|js|png|jpe?g|gif|svg|ico|webp|woff2?|ttf|eot|pdf|zip|mp4|mp3)(\?|$)/i);
+    const m = url.match(/\.(png|jpe?g|gif|svg|ico|webp|pdf|zip|mp4|mp3|avi|mov|wmv)(\?|$)/i);
     if (m) {
       if (log) {
         const ext = m[1].toLowerCase().replace('jpeg','jpg');
@@ -3445,7 +3473,7 @@ function shouldExcludeUrl(url, log = false) {
       return true;
     }
   }
-  if (excDev && /(wp-admin|wp-json|wp-login|wp-cron|\/feed\/?$|xmlrpc|\.well-known|\/amp\/?$)/i.test(url)) {
+  if (excDev && /(wp-admin|wp-json|wp-login|wp-cron|\/feed\/?$|xmlrpc|\.well-known|\/amp\/?$|\.(css|js|woff2?|ttf|eot|map)(\?|$))/i.test(url)) {
     if (log) spiderState.excluded.dev.push(url);
     return true;
   }
