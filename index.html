@@ -249,6 +249,24 @@
     .hopper-fix-path { font-family: 'IBM Plex Mono', monospace; font-size: 0.71rem; color: var(--tag-ok-text); }
     .btn-hopper-fix { background: none; border: 1px solid var(--tag-ok-bd); color: var(--tag-ok-text); border-radius: 3px; padding: 0.2rem 0.6rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .btn-hopper-fix:hover { background: var(--tag-ok-bg); }
+    /* validator */
+    .val-check { display: flex; align-items: center; gap: 0.85rem; padding: 0.65rem 1rem; border-bottom: 1px solid var(--border-inner); font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; }
+    .val-check:last-child { border-bottom: none; }
+    .val-check-icon { font-size: 1rem; flex-shrink: 0; width: 1.4rem; text-align: center; }
+    .val-check-label { flex: 1; color: var(--text-body); }
+    .val-check-detail { font-size: 0.68rem; color: var(--text-muted); }
+    .val-check.pass .val-check-label { color: var(--tag-ok-text); }
+    .val-check.fail .val-check-label { color: #c86a5a; }
+    html.light .val-check.fail .val-check-label { color: #8a2020; }
+    .val-check.warn .val-check-label { color: var(--confirmed-color); }
+    .val-check.skip .val-check-label { color: var(--text-muted); }
+    .val-issue-group { margin-bottom: 1rem; }
+    .val-issue-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; font-weight: 600; color: var(--text-title); margin-bottom: 0.4rem; }
+    .val-issue-row { font-family: 'IBM Plex Mono', monospace; font-size: 0.69rem; color: var(--text-body); padding: 0.3rem 0; border-bottom: 1px solid var(--border-inner); display: flex; gap: 0.5rem; align-items: baseline; }
+    .val-issue-row:last-child { border-bottom: none; }
+    .val-issue-tag { font-size: 0.62rem; color: #c86a5a; background: #1e0f0c; border: 1px solid #3a1e1a; border-radius: 3px; padding: 0.1rem 0.4rem; flex-shrink: 0; }
+    html.light .val-issue-tag { color: #8a2020; background: #f8e8e8; border-color: #d09090; }
+
     .report-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
     .report-preview-frame { background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
     .report-preview-frame iframe { width: 100%; border: none; min-height: 600px; display: block; }
@@ -300,7 +318,8 @@
 
     /* status badges */
     .status-badge { font-size: 0.63rem; padding: 0.18rem 0.5rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; }
-    .status-checking { color: var(--text-muted); border: 1px solid var(--status-chk-bd); background: var(--status-chk-bg); animation: pulse 1.2s ease-in-out infinite; }
+    .check-badge { min-width: 90px; text-align: center; }
+    .check-badge--pending { color: var(--text-dimmer); border: 1px solid var(--border); background: none; }
     .status-ok { color: #5aab72; border: 1px solid #243d28; background: #172a1c; }
     html.light .status-ok { color: #1a6e34; border-color: #8cc89a; background: #d0edda; }
     .status-error { color: #c86a5a; border: 1px solid #3a1e1a; background: #1e0f0c; }
@@ -383,9 +402,9 @@
     </div>
     <nav class="header-nav">
       <button class="nav-tab active" data-page="mapper"><span class="nav-emoji">🗺️</span>Mapper</button>
-      <button class="nav-tab" data-page="checker"><span class="nav-emoji">🚦</span>Status</button>
+      <button class="nav-tab" data-page="checker"><span class="nav-emoji">🩺</span>Health</button>
       <button class="nav-tab" data-page="spider"><span class="nav-emoji">🕷️</span>Spider</button>
-      <button class="nav-tab" data-page="report"><span class="nav-emoji">📊</span>Report</button>
+      <button class="nav-tab" data-page="validator"><span class="nav-emoji">📊</span>Validator</button>
     </nav>
   </header>
   <button class="btn-theme" id="btn-theme" title="Toggle light/dark mode">🌙</button>
@@ -505,7 +524,7 @@
       </div>
     </div>
     <div id="cors-warning" class="hidden">
-      ⚠ Oops! Sorry, this feature isn't available yet.
+      ⚠ Some URLs couldn't be checked — they may be blocking cross-origin requests (CORS). These are shown as <strong>ERR</strong> in the results.
     </div>
     <div id="check-progress-area" class="hidden" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:#555;padding:1rem 0.25rem;">
       <span id="check-progress"></span>
@@ -550,7 +569,7 @@
       <div class="card-header">
         <div class="card-header-text">
           <div class="card-title">Spider</div>
-          <div class="card-help">Crawl a site to discover all internal URLs.</div>
+          <div class="card-help">Crawl a site to discover all internal URLs. Works best on sites that allow cross-origin requests — most public sites will show "blocked" due to browser CORS restrictions. For full crawling, use a desktop tool like Screaming Frog and import the CSV.</div>
         </div>
       </div>
       <div class="card-body">
@@ -591,30 +610,103 @@
     </div>
   </div><!-- end #page-spider -->
 
-  <!-- ── PAGE: Report ── -->
-  <div id="page-report" class="hidden">
+  <!-- ── PAGE: Validator ── -->
+  <div id="page-validator" class="hidden">
+
+    <!-- Base URLs card -->
     <div class="section-card">
       <div class="card-header">
         <div class="card-header-text">
-          <div class="card-title">Report</div>
-          <div class="card-help">Generate a clean, shareable summary of your migration — URL counts, confirmed redirects, warnings, and live check results.</div>
+          <div class="card-title">Validator</div>
+          <div class="card-help">Runs a full QA check on your confirmed redirects — loops, chains, duplicate destinations, missing destinations, and optionally live status checks. Pass all checks before you export.</div>
         </div>
-        <button class="btn-check" id="btn-generate-report">Generate report</button>
+        <button class="btn-check" id="btn-run-validator">Run checks</button>
+      </div>
+      <div class="card-body">
+        <div class="check-row">
+          <div class="base-url-wrap">
+            <label class="base-url-label" for="val-old-base">Old site base URL <span style="color:var(--text-dimmer)">(optional — for live checks)</span></label>
+            <input class="base-url-input" id="val-old-base" type="url" placeholder="https://old-site.com" />
+          </div>
+          <div class="check-divider"></div>
+          <div class="base-url-wrap">
+            <label class="base-url-label" for="val-new-base">New site base URL <span style="color:var(--text-dimmer)">(optional — for live checks)</span></label>
+            <input class="base-url-input" id="val-new-base" type="url" placeholder="https://new-site.com" />
+          </div>
+        </div>
       </div>
     </div>
-    <div id="report-output" class="hidden" style="margin-top:1rem;">
-      <div class="report-toolbar">
-        <span id="report-generated-at" class="session-timestamp"></span>
-        <div style="display:flex;gap:0.5rem;">
-          <button class="btn-session save" id="btn-download-report">↓ Download HTML</button>
-          <button class="btn-session save" id="btn-download-pdf">↓ Download PDF</button>
-          <button class="btn-session" id="btn-copy-report">⧉ Copy HTML</button>
+
+    <!-- Validator results -->
+    <div id="validator-results" class="hidden" style="margin-top:1rem;">
+
+      <!-- Check list -->
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-header-text">
+            <div class="card-title">Checks</div>
+          </div>
+          <span id="validator-score" style="font-family:'IBM Plex Mono',monospace;font-size:0.78rem;font-weight:600;"></span>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div id="validator-checks"></div>
         </div>
       </div>
-      <div id="report-preview" class="report-preview-frame"></div>
+
+      <!-- Issues detail -->
+      <div id="validator-issues" class="hidden" style="margin-top:1rem;">
+        <div class="section-card">
+          <div class="card-header">
+            <div class="card-header-text">
+              <div class="card-title">Issues</div>
+              <div class="card-help">Details of every failed check — fix these before exporting.</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="validator-issues-body"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Report card -->
+      <div class="section-card" style="margin-top:1rem;">
+        <div class="card-header">
+          <div class="card-header-text">
+            <div class="card-title">Report</div>
+            <div class="card-help">Generate a shareable summary of your migration — opens in a new tab.</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-self:center;">
+            <button class="btn-session save" id="btn-download-report">↓ HTML report</button>
+            <button class="btn-session save" id="btn-download-pdf">↓ PDF report</button>
+            <button class="btn-session" id="btn-copy-report">⧉ Copy HTML</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export card -->
+      <div class="section-card" style="margin-top:1rem;">
+        <div class="card-header">
+          <div class="card-header-text">
+            <div class="card-title">Export</div>
+            <div class="card-help">Download your confirmed redirects. You can export even with warnings — just make sure you've reviewed them.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="export-format-bar" style="margin-bottom:1rem;">
+            <span class="filter-label">format:</span>
+            <button class="pill active" data-format="csv">CSV</button>
+            <button class="pill" data-format="htaccess">.htaccess</button>
+            <button class="pill" data-format="nginx">Nginx</button>
+          </div>
+          <pre id="export-preview"></pre>
+          <button class="btn-download" id="btn-download">↓ download</button>
+        </div>
+      </div>
+
     </div>
-    <div id="report-empty" class="placeholder">analyse some URLs first, then generate a report</div>
-  </div><!-- end #page-report -->
+
+    <div id="validator-empty" class="placeholder">analyse and confirm some redirects on the Mapper first</div>
+  </div><!-- end #page-validator -->
 
   <!-- ── Results (mapper page) ── -->
   <div id="page-mapper-results">
@@ -634,8 +726,7 @@
       </div>
       <div class="tabs">
         <button class="tab active" data-tab="map">mapping</button>
-        <button class="tab" data-tab="export" id="export-tab-btn">export (0)</button>
-        <button class="tab" data-tab="warnings" id="warnings-tab-btn" title="Flags">🚩</button>
+        <button class="tab" data-tab="warnings" id="warnings-tab-btn" title="Flags">🚩 flags</button>
       </div>
       <div id="tab-map">
         <div class="filters">
@@ -652,19 +743,6 @@
         </div>
         <div id="rows-container"></div>
         <div class="accept-all-row hidden" id="accept-all-row"></div>
-      </div>
-      <div id="tab-export" class="hidden">
-        <div id="export-empty" class="empty hidden">confirm redirects in the mapping tab first</div>
-        <div id="export-content" class="hidden">
-          <div class="export-format-bar">
-            <span class="filter-label">format:</span>
-            <button class="pill active" data-format="csv">CSV</button>
-            <button class="pill" data-format="htaccess">.htaccess</button>
-            <button class="pill" data-format="nginx">Nginx</button>
-          </div>
-          <pre id="export-preview"></pre>
-          <button class="btn-download" id="btn-download">↓ download</button>
-        </div>
       </div>
       <div id="tab-warnings" class="hidden">
         <div id="warnings-empty" class="empty">✨ Looking good! Nothing to see here.</div>
@@ -750,7 +828,7 @@ function switchPage(page) {
   document.getElementById('page-mapper-results').classList.toggle('hidden', page !== 'mapper');
   document.getElementById('page-checker').classList.toggle('hidden', page !== 'checker');
   document.getElementById('page-spider').classList.toggle('hidden', page !== 'spider');
-  document.getElementById('page-report').classList.toggle('hidden', page !== 'report');
+  document.getElementById('page-validator').classList.toggle('hidden', page !== 'validator');
 }
 document.querySelectorAll('.nav-tab').forEach(btn => btn.addEventListener('click', () => switchPage(btn.dataset.page)));
 
@@ -1090,11 +1168,17 @@ function normaliseBase(base) { return base ? base.replace(/\/$/, '') : ''; }
 
 async function checkUrlReal(fullUrl) {
   try {
-    const res = await fetch(fullUrl, { method: 'HEAD' });
+    const res = await fetch(fullUrl, { method: 'HEAD', mode: 'cors' });
     return { ok: res.ok, status: res.status };
   } catch {
-    try { await fetch(fullUrl, { method:'HEAD', mode:'no-cors' }); return { ok:true, status:'?' }; }
-    catch { return { ok:false, status:'ERR' }; }
+    // CORS blocked — try no-cors to at least confirm reachability
+    try {
+      await fetch(fullUrl, { method: 'HEAD', mode: 'no-cors' });
+      // no-cors gives opaque response — reachable but status unknown
+      return { ok: null, status: 'CORS' };
+    } catch {
+      return { ok: false, status: 'ERR' };
+    }
   }
 }
 
@@ -1109,7 +1193,10 @@ async function runChecks() {
   document.getElementById('check-progress-area').classList.remove('hidden');
   document.getElementById('check-progress').textContent = 'starting…';
   document.getElementById('check-results-container').innerHTML = '';
-  state.rows.forEach(r => { r.oldStatus = null; r.destStatus = null; });
+  state.rows.forEach(r => {
+    r.oldStatus  = oldBase ? { pending: true } : null;
+    r.destStatus = (newBase && r.confirmed) ? { pending: true } : null;
+  });
 
   const toCheck = [];
   if (oldBase) state.rows.forEach(r => toCheck.push({ row:r, type:'old', url:oldBase+r.old }));
@@ -1120,7 +1207,7 @@ async function runChecks() {
   for (let i = 0; i < toCheck.length; i += BATCH) {
     await Promise.all(toCheck.slice(i, i+BATCH).map(async ({ row, type, url }) => {
       const result = await checkUrlReal(url);
-      if (result.status === '?') corsBlocked++;
+      if (result.status === 'CORS' || result.status === 'ERR') corsBlocked++;
       if (type === 'old') row.oldStatus = result; else row.destStatus = result;
       done++;
       document.getElementById('check-progress').textContent = `checking… ${done}/${toCheck.length}`;
@@ -1139,11 +1226,12 @@ async function runChecks() {
 // ── Render ─────────────────────────────────────────────────────────────────────
 function statusBadge(statusObj, type) {
   if (!statusObj) return '';
-  if (statusObj.status === 'ERR') return `<span class="status-badge status-error">✗ ${type==='old'?'old':'dest'}: ERR</span>`;
-  if (statusObj.status === '?') return `<span class="status-badge status-checking">~ ${type==='old'?'old':'dest'}: ?</span>`;
-  const bad = statusObj.status === 404 || !statusObj.ok;
-  if (type === 'old') return `<span class="status-badge ${bad?'status-error':'status-ok'}">${bad?'✗':'✓'} ${statusObj.status}</span>`;
-  return `<span class="status-badge ${bad?'status-dest-error':'status-dest-ok'}">${bad?'✗':'✓'} dest: ${statusObj.status}</span>`;
+  const label = type === 'old' ? 'old' : 'dest';
+  if (statusObj.status === 'ERR')  return `<span class="status-badge status-error" title="Could not reach this URL — network error or DNS failure">✗ ${label}: unreachable</span>`;
+  if (statusObj.status === 'CORS') return `<span class="status-badge status-checking" title="URL is reachable but the server blocks status checks (CORS)">~ ${label}: blocked</span>`;
+  const bad = !statusObj.ok;
+  if (type === 'old') return `<span class="status-badge ${bad?'status-error':'status-ok'}" title="${bad?'This URL is returning an error on the old site':'This URL resolves correctly on the old site'}">${bad?'✗':'✓'} ${statusObj.status}</span>`;
+  return `<span class="status-badge ${bad?'status-dest-error':'status-dest-ok'}" title="${bad?'Redirect destination is broken on the new site':'Redirect destination resolves correctly'}">${bad?'✗':'✓'} dest: ${statusObj.status}</span>`;
 }
 
 function render() {
@@ -1154,7 +1242,6 @@ function render() {
   document.getElementById('stat-unchanged').textContent = unchanged.length;
   document.getElementById('stat-redirects').textContent = redirects.length;
   document.getElementById('stat-confirmed').textContent = confirmed.length;
-  document.getElementById('export-tab-btn').textContent = `export (${confirmed.length})`;
 
   const pct = redirects.length > 0 ? Math.round((confirmed.length / redirects.length) * 100) : 0;
   document.getElementById('progress-bar-fill').style.width = pct + '%';
@@ -1162,7 +1249,6 @@ function render() {
 
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab===state.tab));
   document.getElementById('tab-map').classList.toggle('hidden', state.tab!=='map');
-  document.getElementById('tab-export').classList.toggle('hidden', state.tab!=='export');
   document.getElementById('tab-warnings').classList.toggle('hidden', state.tab!=='warnings');
   document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.filter===state.filter));
 
@@ -1210,19 +1296,6 @@ function render() {
     acceptBtn.disabled = !hasAcceptable;
   }
 
-  if (state.tab==='export') {
-    const has = confirmed.length > 0;
-    document.getElementById('export-empty').classList.toggle('hidden', has);
-    document.getElementById('export-content').classList.toggle('hidden', !has);
-    if (has) {
-      document.getElementById('export-preview').textContent = buildExport();
-      document.getElementById('btn-download').textContent = `↓ download ${exportFilename().split('/').pop()}`;
-    }
-    // Sync format pills
-    document.querySelectorAll('.export-format-bar .pill').forEach(p =>
-      p.classList.toggle('active', p.dataset.format === state.exportFormat));
-  }
-
   updateRulePreview();
 }
 
@@ -1234,17 +1307,58 @@ function renderCheckResults() {
   checked.forEach(row => {
     const div = document.createElement('div');
     div.className = `row ${row.status==='unchanged'?'row-unchanged':'row-redirect'}`;
-    const urlSpan = row.status==='unchanged'
-      ? `<span class="url-unchanged">${esc(row.old)}</span>`
-      : `<span class="url-old" title="${esc(row.old)}">${esc(row.old)}</span>`;
-    const destSpan = row.confirmed
-      ? `<span class="arrow">→</span><span style="color:#c0bbb4;font-family:IBM Plex Mono,monospace;font-size:0.71rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px;">${esc(row.confirmed)}</span>`
-      : '';
-    div.innerHTML = urlSpan + destSpan
-      + (row.oldStatus ? statusBadge(row.oldStatus,'old') : '')
-      + (row.destStatus ? statusBadge(row.destStatus,'dest') : '');
+    div.style.cssText = 'display:flex;align-items:center;gap:0.65rem;flex-wrap:nowrap;';
+
+    // Left: URLs — flex:1 so badges stay pinned right
+    const urlEl = document.createElement('span');
+    urlEl.style.cssText = 'flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;font-family:IBM Plex Mono,monospace;font-size:0.71rem;display:flex;align-items:center;gap:0.4rem;';
+    if (row.status === 'unchanged') {
+      urlEl.innerHTML = `<span style="color:var(--text-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(row.old)}</span>`;
+    } else {
+      urlEl.innerHTML = `<span style="color:#c86a5a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:1;min-width:0;">${esc(row.old)}</span>`
+        + (row.confirmed
+          ? `<span style="color:var(--arrow-color);flex-shrink:0;">→</span><span style="color:var(--text-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:1;min-width:0;">${esc(row.confirmed)}</span>`
+          : `<span style="color:var(--text-dimmer);font-size:0.65rem;flex-shrink:0;">no redirect confirmed</span>`);
+    }
+
+    // Right: always both badges, pinned right
+    const badgesEl = document.createElement('div');
+    badgesEl.style.cssText = 'display:flex;gap:0.4rem;flex-shrink:0;align-items:center;margin-left:auto;';
+    badgesEl.innerHTML = makeBadge(row.oldStatus, 'old') + makeBadge(row.destStatus, 'dest');
+
+    div.appendChild(urlEl);
+    div.appendChild(badgesEl);
     container.appendChild(div);
   });
+}
+
+function makeBadge(statusObj, type) {
+  const isOld = type === 'old';
+  const label = isOld ? 'Old' : 'New';
+
+  if (!statusObj) {
+    return `<span class="status-badge check-badge check-badge--pending" title="${isOld ? 'Old site not yet checked' : 'New site not yet checked'}">${label}: –</span>`;
+  }
+  if (statusObj.pending) {
+    return `<span class="status-badge check-badge status-checking" title="Checking…">${label}: …</span>`;
+  }
+  if (statusObj.status === 'ERR') {
+    return `<span class="status-badge check-badge status-error" title="Could not reach — network error or DNS failure">${label}: unreachable</span>`;
+  }
+  if (statusObj.status === 'CORS') {
+    return `<span class="status-badge check-badge status-checking" title="Reachable but server blocks status checks (CORS)">${label}: blocked</span>`;
+  }
+
+  const bad = !statusObj.ok;
+  const cls = isOld
+    ? (bad ? 'status-error' : 'status-ok')
+    : (bad ? 'status-dest-error' : 'status-dest-ok');
+  const icon = bad ? '✗' : '✓';
+  const tip = isOld
+    ? (bad ? `Returns ${statusObj.status} on old site` : `Returns ${statusObj.status} on old site`)
+    : (bad ? `Returns ${statusObj.status} on new site — destination may be broken` : `Returns ${statusObj.status} on new site`);
+
+  return `<span class="status-badge check-badge ${cls}" title="${tip}">${icon} ${label}: ${statusObj.status}</span>`;
 }
 
 function renderRows(rows) {
@@ -1503,70 +1617,194 @@ ${unconfirmed.length > 0 ? `
 </body></html>`;
 }
 
-function renderReport() {
-  if (!state.rows.length) {
-    document.getElementById('report-output').classList.add('hidden');
-    document.getElementById('report-empty').classList.remove('hidden');
-    return;
-  }
-  const html = generateReportHTML();
-  document.getElementById('report-empty').classList.add('hidden');
-  document.getElementById('report-output').classList.remove('hidden');
-
-  // Render in iframe for live preview
-  const frame = document.getElementById('report-preview');
-  frame.innerHTML = '<iframe id="report-iframe"></iframe>';
-  const iframe = document.getElementById('report-iframe');
-  const doc = iframe.contentDocument || iframe.contentWindow.document;
-  doc.open(); doc.write(html); doc.close();
-
-  // Auto-resize iframe to content height
-  iframe.onload = () => {
-    iframe.style.height = (iframe.contentWindow.document.body.scrollHeight + 32) + 'px';
-  };
-
-  const now = new Date();
-  const pad = n => String(n).padStart(2,'0');
-  document.getElementById('report-generated-at').textContent =
-    `generated ${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
-
-  return html;
-}
-
 let lastReportHTML = '';
 
-document.getElementById('btn-generate-report').addEventListener('click', () => {
-  lastReportHTML = renderReport();
+// ── Validator ──────────────────────────────────────────────────────────────────
+async function runValidator() {
+  const confirmed = state.rows.filter(r => r.status === 'redirect' && r.confirmed);
+  if (!confirmed.length) {
+    document.getElementById('validator-empty').classList.remove('hidden');
+    document.getElementById('validator-results').classList.add('hidden');
+    return;
+  }
+  document.getElementById('validator-empty').classList.add('hidden');
+  document.getElementById('validator-results').classList.remove('hidden');
+
+  const oldBase = normaliseBase(document.getElementById('val-old-base').value.trim());
+  const newBase = normaliseBase(document.getElementById('val-new-base').value.trim());
+  const checksEl = document.getElementById('validator-checks');
+  checksEl.innerHTML = '<div class="val-check skip"><span class="val-check-icon">⏳</span><span class="val-check-label">Running checks…</span></div>';
+
+  // --- Static checks (instant) ---
+  const loops     = detectLoops();
+  const chains    = detectChains();
+  const destMap   = {};
+  const dupes     = [];
+  confirmed.forEach(r => {
+    if (destMap[r.confirmed]) dupes.push({ old: r.old, dest: r.confirmed, clash: destMap[r.confirmed] });
+    else destMap[r.confirmed] = r.old;
+  });
+  const missing = confirmed.filter(r => !r.confirmed || r.confirmed.trim() === '');
+
+  // --- Live checks (async, optional) ---
+  let liveResults = null;
+  if (oldBase || newBase) {
+    liveResults = { oldErrors: [], destErrors: [], corsBlocked: 0 };
+    const toCheck = [];
+    if (oldBase) confirmed.forEach(r => toCheck.push({ row: r, type: 'old', url: oldBase + r.old }));
+    if (newBase) confirmed.forEach(r => toCheck.push({ row: r, type: 'dest', url: newBase + r.confirmed }));
+    checksEl.innerHTML = '<div class="val-check skip"><span class="val-check-icon">🌐</span><span class="val-check-label">Checking live URLs…</span><span class="val-check-detail">0/' + toCheck.length + '</span></div>';
+    let done = 0;
+    const BATCH = 5;
+    for (let i = 0; i < toCheck.length; i += BATCH) {
+      await Promise.all(toCheck.slice(i, i + BATCH).map(async ({ row, type, url }) => {
+        const res = await checkUrlReal(url);
+        if (res.status === 'CORS' || res.status === 'ERR') liveResults.corsBlocked++;
+        else if (!res.ok) {
+          if (type === 'old') liveResults.oldErrors.push({ url: row.old, status: res.status });
+          else liveResults.destErrors.push({ url: row.confirmed, from: row.old, status: res.status });
+        }
+        done++;
+        checksEl.querySelector('.val-check-detail').textContent = `${done}/${toCheck.length}`;
+      }));
+    }
+  }
+
+  // --- Build check results ---
+  const checks = [];
+
+  checks.push(loops.length === 0
+    ? { state: 'pass', icon: '✅', label: 'No redirect loops', detail: '' }
+    : { state: 'fail', icon: '❌', label: `${loops.length} loop${loops.length!==1?'s':''} detected`, detail: 'Fix in Health → Looper' });
+
+  checks.push(chains.length === 0
+    ? { state: 'pass', icon: '✅', label: 'No redirect chains', detail: '' }
+    : { state: 'warn', icon: '⚠️', label: `${chains.length} chain${chains.length!==1?'s':''} detected`, detail: 'Fix in Health → Hopper' });
+
+  checks.push(dupes.length === 0
+    ? { state: 'pass', icon: '✅', label: 'No duplicate destinations', detail: '' }
+    : { state: 'fail', icon: '❌', label: `${dupes.length} duplicate destination${dupes.length!==1?'s':''}`, detail: 'Multiple old URLs pointing to same destination' });
+
+  checks.push(missing.length === 0
+    ? { state: 'pass', icon: '✅', label: 'All redirects have destinations', detail: '' }
+    : { state: 'fail', icon: '❌', label: `${missing.length} redirect${missing.length!==1?'s':''} missing destination`, detail: '' });
+
+  if (liveResults) {
+    checks.push(liveResults.oldErrors.length === 0
+      ? { state: 'pass', icon: '✅', label: 'All old URLs resolve on old site', detail: liveResults.corsBlocked > 0 ? `${liveResults.corsBlocked} blocked by CORS` : '' }
+      : { state: 'warn', icon: '⚠️', label: `${liveResults.oldErrors.length} old URL${liveResults.oldErrors.length!==1?'s':''} not resolving`, detail: 'These may already be gone — check intentional' });
+
+    checks.push(liveResults.destErrors.length === 0
+      ? { state: 'pass', icon: '✅', label: 'All destinations resolve on new site', detail: liveResults.corsBlocked > 0 ? `${liveResults.corsBlocked} blocked by CORS` : '' }
+      : { state: 'fail', icon: '❌', label: `${liveResults.destErrors.length} destination${liveResults.destErrors.length!==1?'s':''} returning errors`, detail: 'These redirects point to broken pages' });
+  } else {
+    checks.push({ state: 'skip', icon: '–', label: 'Live URL checks skipped', detail: 'Add base URLs above to enable' });
+    checks.push({ state: 'skip', icon: '–', label: 'Destination checks skipped', detail: 'Add base URLs above to enable' });
+  }
+
+  // Render check list
+  checksEl.innerHTML = checks.map(c => `
+    <div class="val-check ${c.state}">
+      <span class="val-check-icon">${c.icon}</span>
+      <span class="val-check-label">${c.label}</span>
+      ${c.detail ? `<span class="val-check-detail">${c.detail}</span>` : ''}
+    </div>`).join('');
+
+  // Score
+  const fails = checks.filter(c => c.state === 'fail').length;
+  const warns = checks.filter(c => c.state === 'warn').length;
+  const scoreEl = document.getElementById('validator-score');
+  if (fails === 0 && warns === 0) {
+    scoreEl.textContent = '✅ All checks passed';
+    scoreEl.style.color = 'var(--tag-ok-text)';
+  } else if (fails === 0) {
+    scoreEl.textContent = `⚠️ ${warns} warning${warns!==1?'s':''}`;
+    scoreEl.style.color = 'var(--confirmed-color)';
+  } else {
+    scoreEl.textContent = `❌ ${fails} failed, ${warns} warning${warns!==1?'s':''}`;
+    scoreEl.style.color = '#c86a5a';
+  }
+
+  // Issues detail
+  const issuesEl = document.getElementById('validator-issues');
+  const issuesBody = document.getElementById('validator-issues-body');
+  const allIssues = [];
+
+  if (loops.length) allIssues.push({ title: '🔄 Loops', items: loops.map(l => ({ tag: 'loop', text: l.urls.join(' → ') })) });
+  if (chains.length) allIssues.push({ title: '🔗 Chains', items: chains.map(c => ({ tag: `${c.chain.length} hops`, text: c.chain.concat(c.destination).join(' → ') })) });
+  if (dupes.length) allIssues.push({ title: '📋 Duplicate Destinations', items: dupes.map(d => ({ tag: 'duplicate', text: `${d.old} and ${d.clash} → ${d.dest}` })) });
+  if (liveResults?.oldErrors.length) allIssues.push({ title: '🔴 Old URLs Not Resolving', items: liveResults.oldErrors.map(e => ({ tag: e.status, text: e.url })) });
+  if (liveResults?.destErrors.length) allIssues.push({ title: '🔴 Broken Destinations', items: liveResults.destErrors.map(e => ({ tag: e.status, text: `${e.from} → ${e.url}` })) });
+
+  if (allIssues.length) {
+    issuesEl.classList.remove('hidden');
+    issuesBody.innerHTML = allIssues.map(g => `
+      <div class="val-issue-group">
+        <div class="val-issue-title">${g.title}</div>
+        ${g.items.map(i => `<div class="val-issue-row"><span class="val-issue-tag">${i.tag}</span><span>${esc(i.text)}</span></div>`).join('')}
+      </div>`).join('');
+  } else {
+    issuesEl.classList.add('hidden');
+  }
+
+  // Populate export preview
+  const exportPreview = document.getElementById('export-preview');
+  if (exportPreview) {
+    exportPreview.textContent = buildExport();
+    document.getElementById('btn-download').textContent = `↓ download ${exportFilename()}`;
+  }
+  document.querySelectorAll('.export-format-bar .pill').forEach(p =>
+    p.classList.toggle('active', p.dataset.format === state.exportFormat));
+
+  // Generate report
+  lastReportHTML = generateReportHTML();
+}
+
+document.getElementById('btn-run-validator').addEventListener('click', runValidator);
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  const blob = new Blob([buildExport()], { type: exportMime() });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = exportFilename(); a.click();
 });
 
 document.getElementById('btn-download-report').addEventListener('click', () => {
-  if (!lastReportHTML) return;
-  const blob = new Blob([lastReportHTML], { type: 'text/html' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  const d = new Date();
-  a.download = `waypoint-report-${d.toISOString().slice(0,10)}.html`;
-  a.click();
+  const html = generateReportHTML();
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
 });
 
 document.getElementById('btn-download-pdf').addEventListener('click', () => {
-  if (!lastReportHTML) return;
+  const html = generateReportHTML();
   const win = window.open('', '_blank');
-  win.document.write(lastReportHTML);
+  win.document.write(html);
   win.document.close();
   win.addEventListener('load', () => { win.focus(); win.print(); });
 });
 
 document.getElementById('btn-copy-report').addEventListener('click', () => {
-  if (!lastReportHTML) return;
-  navigator.clipboard.writeText(lastReportHTML).then(() => {
+  const html = generateReportHTML();
+  navigator.clipboard.writeText(html).then(() => {
     const btn = document.getElementById('btn-copy-report');
     btn.textContent = '✓ Copied!';
     setTimeout(() => btn.textContent = '⧉ Copy HTML', 2000);
   });
 });
 
-// ── Loop detection ─────────────────────────────────────────────────────────────
+// Export format pills (validator page)
+document.querySelectorAll('.export-format-bar .pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.exportFormat = btn.dataset.format;
+    const preview = document.getElementById('export-preview');
+    if (preview) {
+      preview.textContent = buildExport();
+      document.getElementById('btn-download').textContent = `↓ download ${exportFilename()}`;
+    }
+    document.querySelectorAll('.export-format-bar .pill').forEach(p =>
+      p.classList.toggle('active', p.dataset.format === state.exportFormat));
+  });
+});
 function detectLoops() {
   // Build a map of old → confirmed
   const redirectMap = {};
@@ -1756,11 +1994,14 @@ function extractLinks(html, base) {
 
 async function fetchPage(url) {
   try {
-    const res = await fetch(url, { method: 'GET', credentials: 'omit' });
+    const res = await fetch(url, {
+      method: 'GET',
+      credentials: 'omit',
+      headers: { 'Accept': 'text/html,application/xhtml+xml' }
+    });
     const text = res.headers.get('content-type')?.includes('text/html') ? await res.text() : '';
     return { ok: res.ok, status: res.status, statusText: res.statusText || String(res.status), html: text };
   } catch {
-    // CORS or network error — try HEAD with no-cors to at least log it
     return { ok: null, status: null, statusText: 'blocked', html: '' };
   }
 }
@@ -1849,6 +2090,21 @@ async function runSpider() {
   document.getElementById('btn-spider-start').disabled = false;
   document.getElementById('btn-spider-stop').classList.add('hidden');
   updateSpiderStats();
+
+  // Show CORS notice if everything was blocked
+  const allBlocked = spiderState.results.length > 0 &&
+    spiderState.results.every(r => r.statusText === 'blocked');
+  const existingNotice = document.getElementById('spider-cors-notice');
+  if (allBlocked && !existingNotice) {
+    const notice = document.createElement('div');
+    notice.id = 'spider-cors-notice';
+    notice.id = 'cors-warning';
+    notice.style.marginTop = '0.75rem';
+    notice.innerHTML = '⚠ All URLs were blocked by CORS. The target site doesn\'t allow cross-origin requests from the browser. Try importing a CSV from Screaming Frog or another crawler instead.';
+    document.getElementById('spider-rows').before(notice);
+  } else if (!allBlocked && existingNotice) {
+    existingNotice.remove();
+  }
 }
 
 function stopSpider() {
