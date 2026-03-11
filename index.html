@@ -275,7 +275,9 @@
     .home-stat { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; text-align: center; }
     .home-stat-n { font-size: 1.1rem; font-weight: 600; display: block; line-height: 1.1; }
     .home-stat-l { color: var(--text-muted); font-size: 0.6rem; }
-    .home-session-card .home-arrow { color: var(--text-dimmer); font-size: 0.9rem; flex-shrink: 0; }
+    .home-mini-progress-wrap { height: 4px; background: var(--border-soft); border-radius: 99px; overflow: hidden; margin: 0.4rem 0 0.2rem; }
+    .home-mini-progress-fill { height: 100%; background: linear-gradient(90deg, #008080, #00a0a0); border-radius: 99px; transition: width 0.4s ease; }
+    .home-mini-progress-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; color: var(--text-dimmer); }
     .home-session-card:hover .home-arrow { color: #008080; }
 
     /* share button */
@@ -336,7 +338,8 @@
     .tab.active { color: #008080; border-bottom-color: #008080; }
 
     /* filters */
-    .filters { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filters { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 0.4rem 0; }
+    .filters-sticky { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 0.5rem 0; margin-bottom: 0.5rem; }
     .filter-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--text-dim); margin-right: 0.2rem; }
     .search-wrap { display: flex; align-items: center; margin-left: auto; position: relative; }
     .search-input { background: var(--bg-input); border: 1px solid var(--border); border-radius: 4px; padding: 0.28rem 1.6rem 0.28rem 0.65rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--text-body); outline: none; width: 180px; transition: border-color 0.15s, width 0.2s; }
@@ -536,6 +539,7 @@
             <button class="btn-session save" id="btn-save-session">↓ Save session</button>
             <label class="btn-session" id="btn-load-label" title="Load a previously saved session">↑ Load session<input type="file" id="btn-load-session" accept=".json" hidden /></label>
             <button class="btn-share" id="btn-share-session" title="Copy a shareable link to this session">🔗 Share</button>
+            <button class="btn-session" id="btn-clear-session" title="Clear session and start fresh" style="color:var(--text-muted);">✕ Clear</button>
           </div>
         </div>
       </div>
@@ -579,7 +583,7 @@
       <div class="card-header accordion" id="rules-accordion-header">
         <div class="card-header-text">
           <div class="card-title">Workbench</div>
-          <div class="accordion-help">Pattern rules and advanced options for bulk-managing redirects.</div>
+          <div class="accordion-help">Confidence threshold, pattern rules, and bulk import tools.</div>
         </div>
         <span class="rule-preview" id="rule-preview"></span>
         <span class="accordion-toggle" id="rules-toggle">◀</span>
@@ -635,13 +639,6 @@
       </div>
       <button class="btn-check" id="btn-run-all-analysis">Run all checks</button>
     </div>
-    <div id="cors-warning" class="hidden">
-      ⚠ Some URLs couldn't be checked — they may be blocking cross-origin requests (CORS). These are shown as <strong>ERR</strong> in the results.
-    </div>
-    <div id="check-progress-area" class="hidden" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:#555;padding:1rem 0.25rem;">
-      <span id="check-progress"></span>
-    </div>
-    <div id="check-results-container" style="margin-top:0.5rem;display:flex;flex-direction:column;gap:0.35rem;"></div>
 
     <!-- Tracker card -->
     <div class="section-card" style="margin-bottom:1rem;">
@@ -836,7 +833,9 @@
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
           <button class="btn-session" id="btn-spider-use-old" title="Send to existing site URL list">→ use as existing site URLs</button>
           <button class="btn-session" id="btn-spider-use-new" title="Send to new site URL list">→ use as new site URLs</button>
-          <button class="btn-session save" id="btn-spider-export">↓ export CSV</button>
+          <button class="btn-session" id="btn-spider-copy" title="Copy all URLs to clipboard">⧉ copy URLs</button>
+          <button class="btn-session save" id="btn-spider-export">↓ CSV</button>
+          <button class="btn-session save" id="btn-spider-export-xml">↓ Sitemap XML</button>
         </div>
       </div>
 
@@ -901,10 +900,20 @@
         </div>
       </div>
     </div>
+    <div id="cors-warning" class="hidden">
+      ⚠ Some URLs couldn't be checked — they may be blocking cross-origin requests (CORS). These are shown as <strong>ERR</strong> in the results.
+    </div>
+    <div id="check-progress-area" class="hidden" style="font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--text-muted);padding:0.5rem 0;">
+      <span id="check-progress"></span>
+    </div>
+    <div id="check-results-container" style="margin-bottom:0.5rem;display:flex;flex-direction:column;gap:0.35rem;"></div>
 
     <!-- Run checks button -->
-    <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
-      <button class="btn-check" id="btn-run-validator">Run checks</button>
+    <div class="section-card" style="margin-bottom:1rem;background:var(--bg-input);border-color:var(--border-soft);">
+      <div class="card-body" style="padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+        <span style="font-family:'IBM Plex Sans',sans-serif;font-size:0.78rem;color:var(--text-muted);">Run all checks against your confirmed redirects — loops, chains, mergers, and optionally live status.</span>
+        <button class="btn-check" id="btn-run-validator" style="white-space:nowrap;">Run checks</button>
+      </div>
     </div>
 
     <!-- Validator results -->
@@ -998,7 +1007,7 @@
         <button class="tab" data-tab="warnings" id="warnings-tab-btn" title="Flags">🚩 flags</button>
       </div>
       <div id="tab-map">
-        <div class="filters">
+        <div class="filters filters-sticky">
           <span class="filter-label">show:</span>
           <button class="pill active" data-filter="all">all <span class="pill-count" id="pill-count-all"></span></button>
           <button class="pill" data-filter="unchanged">unchanged <span class="pill-count" id="pill-count-unchanged"></span></button>
@@ -1107,7 +1116,7 @@
       <p class="modal-text">Waypoint is provided as-is, without warranty of any kind. While every effort has been made to ensure accuracy, you are solely responsible for reviewing and testing any redirects before deploying them to a live site. The creator accepts no liability for any loss, damage, or disruption arising from the use of this tool.</p>
 
       <div class="modal-section-title">Privacy</div>
-      <p class="modal-text">Waypoint runs entirely in your browser. No URLs, session data, or redirect mappings are transmitted to or stored on any server — everything stays on your device. The only exception is the Spider's proxy feature: when crawling a site, page requests are routed through a Cloudflare Worker proxy in order to bypass browser security restrictions. Only the URLs being crawled are passed through — no personal data is collected or logged.</p>
+      <p class="modal-text">Waypoint runs entirely in your browser. No URLs, session data, or redirect mappings are transmitted to or stored on any server — with two exceptions. The Spider's proxy feature routes page requests through a Cloudflare Worker to bypass browser security restrictions. The share link feature stores session data in a Cloudflare Worker so it can be retrieved via a short link. If you're not using either of these features, Waypoint is completely local.</p>
 
       <div class="modal-section-title">Licence</div>
       <p class="modal-text">All rights reserved. This tool and its source code may not be reproduced, distributed, or used as the basis for other products without explicit written permission from the creator.</p>
@@ -1671,7 +1680,7 @@ function render() {
 
   const pct = redirects.length > 0 ? Math.round((confirmed.length / redirects.length) * 100) : 0;
   document.getElementById('progress-bar-fill').style.width = pct + '%';
-  document.getElementById('progress-pct').textContent = redirects.length > 0 ? `${pct}% complete` : '';
+  document.getElementById('progress-pct').textContent = redirects.length > 0 ? `${pct}% complete · ${confirmed.length}/${redirects.length}` : '';
 
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab===state.tab));
   document.getElementById('tab-map').classList.toggle('hidden', state.tab!=='map');
@@ -2540,11 +2549,14 @@ function renderHomePage() {
       <div class="home-session-info">
         <div class="home-session-name">${esc(entry.name)}</div>
         <div class="home-session-meta">last updated ${dateStr}</div>
+        <div class="home-mini-progress-wrap">
+          <div class="home-mini-progress-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="home-mini-progress-label">${pct}% complete · ${entry.confirmed}/${entry.needsRedirect} confirmed</div>
       </div>
       <div class="home-session-stats">
         <div class="home-stat"><span class="home-stat-n" style="color:#008080">${entry.totalUrls}</span><span class="home-stat-l">total</span></div>
         <div class="home-stat"><span class="home-stat-n" style="color:var(--tag-ok-text)">${entry.confirmed}</span><span class="home-stat-l">confirmed</span></div>
-        <div class="home-stat"><span class="home-stat-n" style="color:var(--confirmed-color)">${pct}%</span><span class="home-stat-l">complete</span></div>
         ${entry.warnings > 0 ? `<div class="home-stat"><span class="home-stat-n" style="color:#c86a5a">${entry.warnings}</span><span class="home-stat-l">warnings</span></div>` : ''}
       </div>
       <span class="home-arrow">→</span>`;
@@ -3577,6 +3589,44 @@ document.getElementById('btn-spider-export').addEventListener('click', () => {
   const blob = new Blob([csv], { type: 'text/csv' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'spider-results.csv'; a.click();
+});
+
+document.getElementById('btn-spider-export-xml').addEventListener('click', () => {
+  const urls = spiderState.results.filter(r => r.ok === true).map(r => r.url);
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${
+    urls.map(u => `  <url>\n    <loc>${u}</loc>\n  </url>`).join('\n')
+  }\n</urlset>`;
+  const blob = new Blob([xml], { type: 'application/xml' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'sitemap.xml'; a.click();
+});
+
+document.getElementById('btn-spider-copy').addEventListener('click', () => {
+  const urls = spiderState.results.map(r => r.url).join('\n');
+  navigator.clipboard.writeText(urls).then(() => {
+    const btn = document.getElementById('btn-spider-copy');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '⧉ copy URLs', 2000);
+  });
+});
+
+// Clear session
+document.getElementById('btn-clear-session').addEventListener('click', () => {
+  if (state.rows.length && !confirm('Clear this session and start fresh? Unsaved work will be lost.')) return;
+  state.rows = []; state.rules = []; state.filter = 'all'; state.search = '';
+  state.selectedRows.clear(); focusedRowIndex = -1;
+  history.stack = []; history.cursor = -1;
+  document.getElementById('session-name').value = '';
+  document.getElementById('old-input').value = '';
+  document.getElementById('new-input').value = '';
+  document.getElementById('old-base').value = '';
+  document.getElementById('new-base').value = '';
+  document.getElementById('session-timestamp').textContent = '';
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('placeholder').classList.remove('hidden');
+  document.getElementById('url-count').textContent = '';
+  updateBulkToolbar(); checkAnalyseBtn(); updateCheckBtn();
+  renderRules();
 });
 
 document.getElementById('btn-download').addEventListener('click', () => {
