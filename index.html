@@ -373,17 +373,6 @@
     .btn-jump { font-size: 0.67rem; }
     .row { display: flex; align-items: center; gap: 0.65rem; padding: 0.55rem 0.85rem; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 0.71rem; flex-wrap: wrap; }
     .row-unchanged { background: var(--row-unchanged-bg); border: 1px solid var(--row-unchanged-bd); }
-    .dir-group { margin-bottom: 0.75rem; }
-    .dir-group-header { display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0.65rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--text-muted); background: var(--bg-card-hd); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; user-select: none; margin-bottom: 0.35rem; }
-    .dir-group-header:hover { color: #008080; border-color: #008080; }
-    .dir-group-header .dir-toggle { font-size: 0.7rem; transition: transform 0.18s; flex-shrink: 0; }
-    .dir-group-header.collapsed .dir-toggle { transform: rotate(-90deg); }
-    .dir-group-label { flex: 1; font-weight: 500; color: var(--text-title); }
-    .dir-group-count { color: var(--text-muted); font-size: 0.65rem; }
-    .dir-group-rows { display: flex; flex-direction: column; gap: 0.35rem; }
-    .dir-group.collapsed .dir-group-rows { display: none; }
-    .dir-group-toggle-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 3px; padding: 0.15rem 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; cursor: pointer; transition: all 0.15s; }
-    .dir-group-toggle-btn:hover { border-color: #008080; color: #008080; }
     .row-redirect { background: var(--row-redirect-bg); border: 1px solid var(--row-redirect-bd); }
     .row-confirmed { background: var(--row-confirmed-bg); border: 1px solid var(--row-confirmed-bd); }
     .url-old { color: #c86a5a; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0; }
@@ -482,8 +471,6 @@
     .spider-opt-row input[type="checkbox"] { accent-color: #008080; width: 13px; height: 13px; flex-shrink: 0; cursor: pointer; }
 
     .spider-row { display:flex; align-items:center; gap:0.65rem; padding:0.45rem 0.85rem; border-radius:4px; font-family:'IBM Plex Mono',monospace; font-size:0.7rem; background:var(--row-redirect-bg); border:1px solid var(--row-redirect-bd); flex-wrap:wrap; }
-    .spider-row-checkbox { width:14px; height:14px; accent-color:#008080; cursor:pointer; flex-shrink:0; }
-    .spider-row.selected { background:var(--row-confirmed-bg); border-color:var(--row-confirmed-bd); }
     .spider-url { color:var(--text-body); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
     .spider-badge { font-size:0.63rem; padding:0.18rem 0.5rem; border-radius:3px; white-space:nowrap; flex-shrink:0; font-family:'IBM Plex Mono',monospace; }
     .spider-ok   { color:#5aab72; border:1px solid #243d28; background:#172a1c; }
@@ -1031,7 +1018,6 @@
             <button class="search-clear hidden" id="search-clear" title="Clear search">✕</button>
           </div>
           <button class="btn-accept-all" id="btn-accept-all">accept all suggestions</button>
-          <button class="pill" id="btn-dir-group-toggle" title="Group rows by top-level directory" style="margin-left:0.35rem;">⊞ directories</button>
         </div>
 
         <!-- Jump controls -->
@@ -1092,7 +1078,9 @@
   <span class="footer-divider">//</span>
   <a href="#" class="footer-link" onclick="document.getElementById('modal-boring').classList.remove('hidden');return false;">boring stuff</a>
   <span class="footer-divider">//</span>
-  <a href="https://elleiana.github.io/Canopy/" class="footer-link" target="_blank" rel="noopener">🌿 Canopy</a>
+  <a href="https://elleiana.github.io/Canopy/" target="_blank" rel="noopener" class="footer-link">🌿 Canopy</a>
+  <span class="footer-divider">//</span>
+  <span style="color:var(--text-dimmer);">v0.6.0</span>
 </footer>
 
 <!-- Help modal -->
@@ -1215,6 +1203,45 @@ btnTheme.addEventListener('click', () => {
 });
 
 // ── Page switching ─────────────────────────────────────────────────────────────
+// ── Canopy handoff banner ────────────────────────────────────────────────────
+// Shows a dismissible notice when Waypoint is opened from Canopy's export
+function showCanopyBanner(count) {
+  // Remove any existing banner
+  const existing = document.getElementById('canopy-banner');
+  if (existing) existing.remove();
+
+  const banner = document.createElement('div');
+  banner.id = 'canopy-banner';
+  banner.style.cssText = `
+    background: #0a1a1a; border: 1px solid #008080; border-radius: 6px;
+    padding: 0.65rem 1rem; margin-bottom: 0.85rem;
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem;
+    color: #a0d0d0; display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem;
+  `;
+  banner.innerHTML = `
+    <span>🌿 <strong style="color:#c0eaea;">${count} URL${count!==1?'s':''}</strong> loaded from Canopy — paste your new site URLs on the right to start mapping.</span>
+    <button onclick="this.closest('#canopy-banner').remove()" style="background:none;border:none;color:#408080;cursor:pointer;font-size:1rem;line-height:1;padding:0;flex-shrink:0;" title="Dismiss">✕</button>
+  `;
+  // Insert above the mapper inputs
+  const mapperPage = document.getElementById('page-mapper');
+  if (mapperPage) mapperPage.insertBefore(banner, mapperPage.firstChild);
+}
+
+// Light mode banner override
+document.addEventListener('DOMContentLoaded', () => {
+  // Re-style canopy banner if light mode is active
+  const obs = new MutationObserver(() => {
+    const b = document.getElementById('canopy-banner');
+    if (!b) return;
+    const isLight = document.documentElement.classList.contains('light');
+    b.style.background = isLight ? '#e0f4f4' : '#0a1a1a';
+    b.style.color       = isLight ? '#104040' : '#a0d0d0';
+    b.style.borderColor = '#008080';
+  });
+  obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+});
+
 function switchPage(page) {
   state.page = page;
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.page === page));
@@ -1812,72 +1839,19 @@ function makeBadge(statusObj, type) {
   return `<span class="status-badge check-badge ${cls}" title="${tip}">${icon} ${label}: ${statusObj.status}</span>`;
 }
 
-let dirGroupingEnabled = false;
-let collapsedDirs = new Set();
-
-function getTopDir(url) {
-  const parts = url.replace(/^\//, '').split('/');
-  return parts[0] ? '/' + parts[0] + '/' : '/';
-}
-
 function renderRows(rows) {
   const container = document.getElementById('rows-container');
   if (!rows.length) { container.innerHTML = '<div class="empty">no URLs match this filter</div>'; return; }
   container.innerHTML = '';
-
-  if (!dirGroupingEnabled) {
-    rows.forEach((row, i) => {
-      const el = makeRow(row);
-      el.dataset.index = i;
-      el.dataset.old = row.old;
-      el.setAttribute('tabindex', '0');
-      if (i === focusedRowIndex) el.classList.add('row-focused');
-      container.appendChild(el);
-    });
-    container._displayedRows = rows;
-    return;
-  }
-
-  // Group rows by top-level directory
-  const groups = new Map();
-  rows.forEach(row => {
-    const dir = getTopDir(row.old);
-    if (!groups.has(dir)) groups.set(dir, []);
-    groups.get(dir).push(row);
+  rows.forEach((row, i) => {
+    const el = makeRow(row);
+    el.dataset.index = i;
+    el.dataset.old = row.old;
+    el.setAttribute('tabindex', '0');
+    if (i === focusedRowIndex) el.classList.add('row-focused');
+    container.appendChild(el);
   });
-
-  let flatIndex = 0;
-  groups.forEach((groupRows, dir) => {
-    const isCollapsed = collapsedDirs.has(dir);
-    const confirmed = groupRows.filter(r => r.confirmed || r.override).length;
-    const total = groupRows.length;
-    const groupEl = document.createElement('div');
-    groupEl.className = 'dir-group' + (isCollapsed ? ' collapsed' : '');
-
-    const header = document.createElement('div');
-    header.className = 'dir-group-header' + (isCollapsed ? ' collapsed' : '');
-    header.innerHTML = `<span class="dir-toggle">▼</span><span class="dir-group-label">${esc(dir)}</span><span class="dir-group-count">${confirmed}/${total} confirmed</span>`;
-    header.addEventListener('click', () => {
-      if (collapsedDirs.has(dir)) collapsedDirs.delete(dir);
-      else collapsedDirs.add(dir);
-      render();
-    });
-    groupEl.appendChild(header);
-
-    const rowsEl = document.createElement('div');
-    rowsEl.className = 'dir-group-rows';
-    groupRows.forEach(row => {
-      const el = makeRow(row);
-      el.dataset.index = flatIndex;
-      el.dataset.old = row.old;
-      el.setAttribute('tabindex', '0');
-      if (flatIndex === focusedRowIndex) el.classList.add('row-focused');
-      rowsEl.appendChild(el);
-      flatIndex++;
-    });
-    groupEl.appendChild(rowsEl);
-    container.appendChild(groupEl);
-  });
+  // Store displayed rows for keyboard nav
   container._displayedRows = rows;
 }
 
@@ -1903,14 +1877,13 @@ function makeRow(row) {
     } else {
       div.innerHTML = `
         <span class="url-unchanged">${esc(row.old)}</span>
-        <span class="arrow" style="flex-shrink:0;">→</span>
         <span class="tag-ok">✓ no redirect</span>
-        <button class="btn-edit btn-unchanged-edit" data-old="${esc(row.old)}" title="Manually add a redirect for this URL" style="margin-left:auto;">✎</button>
         <div class="unchanged-edit-wrap hidden" id="unch-warn-${id}">
           <span class="unchanged-warning">⚠️ this URL doesn't need a redirect — are you sure?</span>
           <button class="btn-sm btn-ok btn-override-confirm" data-old="${esc(row.old)}" title="Yes, add a redirect">yes</button>
           <button class="btn-sm btn-cancel btn-override-cancel" data-old="${esc(row.old)}" title="Cancel">no</button>
-        </div>`;
+        </div>
+        <button class="btn-edit btn-unchanged-edit" data-old="${esc(row.old)}" title="Manually add a redirect for this URL">✎</button>`;
     }
 
     // Show warning on pencil click
@@ -2149,15 +2122,6 @@ document.getElementById('btn-flatten-chains').addEventListener('click', () => {
   // Re-run hopper to update results
   const updatedChains = detectChains();
   renderHopperResults(updatedChains);
-});
-
-document.getElementById('btn-dir-group-toggle').addEventListener('click', () => {
-  dirGroupingEnabled = !dirGroupingEnabled;
-  collapsedDirs.clear();
-  const btn = document.getElementById('btn-dir-group-toggle');
-  btn.classList.toggle('active', dirGroupingEnabled);
-  btn.textContent = dirGroupingEnabled ? '⊟ directories' : '⊞ directories';
-  render();
 });
 
 document.getElementById('btn-accept-all').addEventListener('click', () => {
@@ -2709,6 +2673,47 @@ document.getElementById('btn-share-session').addEventListener('click', async () 
 // Check for share link on load, otherwise show home
 (async function() {
   const hash = location.hash;
+  const params = new URLSearchParams(location.search);
+
+  // ── Canopy deeplink: ?canopy=<store-id> ──────────────────────────────────
+  // Sent by Canopy's "Send to Waypoint" export — loads URL list into old-input
+  if (params.has('canopy')) {
+    const id = params.get('canopy');
+    history.replaceState(null, '', location.pathname); // clean URL immediately
+    let urlList = null;
+
+    // Try fetching from canopystore Worker
+    try {
+      const res = await fetch(`https://canopystore.libertyhphillips.workers.dev/get?id=${encodeURIComponent(id)}`);
+      if (res.ok) {
+        const data = await res.json();
+        urlList = data.canopy_urls || data.session?.canopy_urls || null;
+      }
+    } catch(e) { console.warn('Canopy store fetch failed:', e); }
+
+    if (urlList) {
+      renderHomePage();
+      switchPage('mapper');
+      document.getElementById('old-input').value = urlList;
+      checkAnalyseBtn();
+      // Show a friendly banner so the user knows where the URLs came from
+      showCanopyBanner(urlList.split('\n').filter(Boolean).length);
+      return;
+    }
+    // Store fetch failed — fall through to normal home
+  }
+
+  // ── Legacy ?oldurls= query string (small crawls) ─────────────────────────
+  if (params.has('oldurls')) {
+    history.replaceState(null, '', location.pathname);
+    const urlList = params.get('oldurls');
+    renderHomePage();
+    switchPage('mapper');
+    document.getElementById('old-input').value = urlList;
+    checkAnalyseBtn();
+    showCanopyBanner(urlList.split('\n').filter(Boolean).length);
+    return;
+  }
 
   // Short link via store Worker
   if (hash.startsWith('#s=')) {
@@ -3236,19 +3241,14 @@ async function fetchPage(url) {
 
 function renderSpiderRow(item) {
   const div = document.createElement('div');
-  div.className = 'spider-row' + (item._selected ? ' selected' : '');
+  div.className = 'spider-row';
   let badgeClass = 'spider-pend', badgeText = '…';
   if (item.statusText === 'blocked') { badgeClass = 'spider-blk'; badgeText = 'blocked'; }
   else if (item.statusText === 'proxy-error') { badgeClass = 'spider-err'; badgeText = 'proxy error'; }
   else if (item.status === null) { badgeClass = 'spider-pend'; badgeText = '…'; }
   else if (item.ok) { badgeClass = 'spider-ok'; badgeText = String(item.status); }
   else { badgeClass = 'spider-err'; badgeText = String(item.status); }
-  const encodedUrl = encodeURIComponent(item.url);
-  div.innerHTML = `<input type="checkbox" class="spider-row-checkbox" title="Select URL" ${item._selected ? 'checked' : ''} data-url="${esc(item.url)}" /><span class="spider-url">${esc(item.url)}</span><span class="spider-badge ${badgeClass}">${badgeText}</span>`;
-  div.querySelector('.spider-row-checkbox').addEventListener('change', e => {
-    item._selected = e.target.checked;
-    div.classList.toggle('selected', item._selected);
-  });
+  div.innerHTML = `<span class="spider-url">${esc(item.url)}</span><span class="spider-badge ${badgeClass}">${badgeText}</span>`;
   return div;
 }
 
