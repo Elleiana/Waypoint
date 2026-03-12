@@ -373,6 +373,17 @@
     .btn-jump { font-size: 0.67rem; }
     .row { display: flex; align-items: center; gap: 0.65rem; padding: 0.55rem 0.85rem; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 0.71rem; flex-wrap: wrap; }
     .row-unchanged { background: var(--row-unchanged-bg); border: 1px solid var(--row-unchanged-bd); }
+    .dir-group { margin-bottom: 0.75rem; }
+    .dir-group-header { display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0.65rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: var(--text-muted); background: var(--bg-card-hd); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; user-select: none; margin-bottom: 0.35rem; }
+    .dir-group-header:hover { color: #008080; border-color: #008080; }
+    .dir-group-header .dir-toggle { font-size: 0.7rem; transition: transform 0.18s; flex-shrink: 0; }
+    .dir-group-header.collapsed .dir-toggle { transform: rotate(-90deg); }
+    .dir-group-label { flex: 1; font-weight: 500; color: var(--text-title); }
+    .dir-group-count { color: var(--text-muted); font-size: 0.65rem; }
+    .dir-group-rows { display: flex; flex-direction: column; gap: 0.35rem; }
+    .dir-group.collapsed .dir-group-rows { display: none; }
+    .dir-group-toggle-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 3px; padding: 0.15rem 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.63rem; cursor: pointer; transition: all 0.15s; }
+    .dir-group-toggle-btn:hover { border-color: #008080; color: #008080; }
     .row-redirect { background: var(--row-redirect-bg); border: 1px solid var(--row-redirect-bd); }
     .row-confirmed { background: var(--row-confirmed-bg); border: 1px solid var(--row-confirmed-bd); }
     .url-old { color: #c86a5a; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0; }
@@ -471,6 +482,8 @@
     .spider-opt-row input[type="checkbox"] { accent-color: #008080; width: 13px; height: 13px; flex-shrink: 0; cursor: pointer; }
 
     .spider-row { display:flex; align-items:center; gap:0.65rem; padding:0.45rem 0.85rem; border-radius:4px; font-family:'IBM Plex Mono',monospace; font-size:0.7rem; background:var(--row-redirect-bg); border:1px solid var(--row-redirect-bd); flex-wrap:wrap; }
+    .spider-row-checkbox { width:14px; height:14px; accent-color:#008080; cursor:pointer; flex-shrink:0; }
+    .spider-row.selected { background:var(--row-confirmed-bg); border-color:var(--row-confirmed-bd); }
     .spider-url { color:var(--text-body); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
     .spider-badge { font-size:0.63rem; padding:0.18rem 0.5rem; border-radius:3px; white-space:nowrap; flex-shrink:0; font-family:'IBM Plex Mono',monospace; }
     .spider-ok   { color:#5aab72; border:1px solid #243d28; background:#172a1c; }
@@ -1018,6 +1031,7 @@
             <button class="search-clear hidden" id="search-clear" title="Clear search">✕</button>
           </div>
           <button class="btn-accept-all" id="btn-accept-all">accept all suggestions</button>
+          <button class="pill" id="btn-dir-group-toggle" title="Group rows by top-level directory" style="margin-left:0.35rem;">⊞ directories</button>
         </div>
 
         <!-- Jump controls -->
@@ -1077,6 +1091,8 @@
   <a href="#" class="footer-link" onclick="document.getElementById('modal-help').classList.remove('hidden');return false;">what is Waypoint?</a>
   <span class="footer-divider">//</span>
   <a href="#" class="footer-link" onclick="document.getElementById('modal-boring').classList.remove('hidden');return false;">boring stuff</a>
+  <span class="footer-divider">//</span>
+  <a href="https://elleiana.github.io/Canopy/" class="footer-link" target="_blank" rel="noopener">🌿 Canopy</a>
 </footer>
 
 <!-- Help modal -->
@@ -1796,19 +1812,72 @@ function makeBadge(statusObj, type) {
   return `<span class="status-badge check-badge ${cls}" title="${tip}">${icon} ${label}: ${statusObj.status}</span>`;
 }
 
+let dirGroupingEnabled = false;
+let collapsedDirs = new Set();
+
+function getTopDir(url) {
+  const parts = url.replace(/^\//, '').split('/');
+  return parts[0] ? '/' + parts[0] + '/' : '/';
+}
+
 function renderRows(rows) {
   const container = document.getElementById('rows-container');
   if (!rows.length) { container.innerHTML = '<div class="empty">no URLs match this filter</div>'; return; }
   container.innerHTML = '';
-  rows.forEach((row, i) => {
-    const el = makeRow(row);
-    el.dataset.index = i;
-    el.dataset.old = row.old;
-    el.setAttribute('tabindex', '0');
-    if (i === focusedRowIndex) el.classList.add('row-focused');
-    container.appendChild(el);
+
+  if (!dirGroupingEnabled) {
+    rows.forEach((row, i) => {
+      const el = makeRow(row);
+      el.dataset.index = i;
+      el.dataset.old = row.old;
+      el.setAttribute('tabindex', '0');
+      if (i === focusedRowIndex) el.classList.add('row-focused');
+      container.appendChild(el);
+    });
+    container._displayedRows = rows;
+    return;
+  }
+
+  // Group rows by top-level directory
+  const groups = new Map();
+  rows.forEach(row => {
+    const dir = getTopDir(row.old);
+    if (!groups.has(dir)) groups.set(dir, []);
+    groups.get(dir).push(row);
   });
-  // Store displayed rows for keyboard nav
+
+  let flatIndex = 0;
+  groups.forEach((groupRows, dir) => {
+    const isCollapsed = collapsedDirs.has(dir);
+    const confirmed = groupRows.filter(r => r.confirmed || r.override).length;
+    const total = groupRows.length;
+    const groupEl = document.createElement('div');
+    groupEl.className = 'dir-group' + (isCollapsed ? ' collapsed' : '');
+
+    const header = document.createElement('div');
+    header.className = 'dir-group-header' + (isCollapsed ? ' collapsed' : '');
+    header.innerHTML = `<span class="dir-toggle">▼</span><span class="dir-group-label">${esc(dir)}</span><span class="dir-group-count">${confirmed}/${total} confirmed</span>`;
+    header.addEventListener('click', () => {
+      if (collapsedDirs.has(dir)) collapsedDirs.delete(dir);
+      else collapsedDirs.add(dir);
+      render();
+    });
+    groupEl.appendChild(header);
+
+    const rowsEl = document.createElement('div');
+    rowsEl.className = 'dir-group-rows';
+    groupRows.forEach(row => {
+      const el = makeRow(row);
+      el.dataset.index = flatIndex;
+      el.dataset.old = row.old;
+      el.setAttribute('tabindex', '0');
+      if (flatIndex === focusedRowIndex) el.classList.add('row-focused');
+      rowsEl.appendChild(el);
+      flatIndex++;
+    });
+    groupEl.appendChild(rowsEl);
+    container.appendChild(groupEl);
+  });
   container._displayedRows = rows;
 }
 
@@ -1834,13 +1903,14 @@ function makeRow(row) {
     } else {
       div.innerHTML = `
         <span class="url-unchanged">${esc(row.old)}</span>
+        <span class="arrow" style="flex-shrink:0;">→</span>
         <span class="tag-ok">✓ no redirect</span>
+        <button class="btn-edit btn-unchanged-edit" data-old="${esc(row.old)}" title="Manually add a redirect for this URL" style="margin-left:auto;">✎</button>
         <div class="unchanged-edit-wrap hidden" id="unch-warn-${id}">
           <span class="unchanged-warning">⚠️ this URL doesn't need a redirect — are you sure?</span>
           <button class="btn-sm btn-ok btn-override-confirm" data-old="${esc(row.old)}" title="Yes, add a redirect">yes</button>
           <button class="btn-sm btn-cancel btn-override-cancel" data-old="${esc(row.old)}" title="Cancel">no</button>
-        </div>
-        <button class="btn-edit btn-unchanged-edit" data-old="${esc(row.old)}" title="Manually add a redirect for this URL">✎</button>`;
+        </div>`;
     }
 
     // Show warning on pencil click
@@ -2079,6 +2149,15 @@ document.getElementById('btn-flatten-chains').addEventListener('click', () => {
   // Re-run hopper to update results
   const updatedChains = detectChains();
   renderHopperResults(updatedChains);
+});
+
+document.getElementById('btn-dir-group-toggle').addEventListener('click', () => {
+  dirGroupingEnabled = !dirGroupingEnabled;
+  collapsedDirs.clear();
+  const btn = document.getElementById('btn-dir-group-toggle');
+  btn.classList.toggle('active', dirGroupingEnabled);
+  btn.textContent = dirGroupingEnabled ? '⊟ directories' : '⊞ directories';
+  render();
 });
 
 document.getElementById('btn-accept-all').addEventListener('click', () => {
@@ -3157,14 +3236,19 @@ async function fetchPage(url) {
 
 function renderSpiderRow(item) {
   const div = document.createElement('div');
-  div.className = 'spider-row';
+  div.className = 'spider-row' + (item._selected ? ' selected' : '');
   let badgeClass = 'spider-pend', badgeText = '…';
   if (item.statusText === 'blocked') { badgeClass = 'spider-blk'; badgeText = 'blocked'; }
   else if (item.statusText === 'proxy-error') { badgeClass = 'spider-err'; badgeText = 'proxy error'; }
   else if (item.status === null) { badgeClass = 'spider-pend'; badgeText = '…'; }
   else if (item.ok) { badgeClass = 'spider-ok'; badgeText = String(item.status); }
   else { badgeClass = 'spider-err'; badgeText = String(item.status); }
-  div.innerHTML = `<span class="spider-url">${esc(item.url)}</span><span class="spider-badge ${badgeClass}">${badgeText}</span>`;
+  const encodedUrl = encodeURIComponent(item.url);
+  div.innerHTML = `<input type="checkbox" class="spider-row-checkbox" title="Select URL" ${item._selected ? 'checked' : ''} data-url="${esc(item.url)}" /><span class="spider-url">${esc(item.url)}</span><span class="spider-badge ${badgeClass}">${badgeText}</span>`;
+  div.querySelector('.spider-row-checkbox').addEventListener('change', e => {
+    item._selected = e.target.checked;
+    div.classList.toggle('selected', item._selected);
+  });
   return div;
 }
 
