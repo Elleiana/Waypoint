@@ -283,7 +283,7 @@
     /* share button */
     .btn-share { background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 3px; padding: 0.3rem 0.75rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .btn-share:hover { border-color: #008080; color: #008080; }
-    .waypoint-footer { text-align: center; padding: 2rem 1rem 1.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--text-dimmer); }
+    .waypoint-footer { padding: 0.75rem 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); margin-top: 2.5rem; }
     .footer-divider { margin: 0 0.5rem; }
     .footer-link { color: var(--text-dimmer); text-decoration: none; transition: color 0.15s; }
     .footer-link:hover { color: var(--text-muted); }
@@ -1069,14 +1069,13 @@
     </div>
   </div><!-- end #page-home -->
 
-</div><!-- end #app -->
-
-<footer class="waypoint-footer" style="display:flex;align-items:center;justify-content:space-between;">
-  <span style="display:flex;align-items:center;gap:0.4rem;"><span>🐯</span><span class="footer-divider">//</span><span style="color:var(--text-muted);font-size:0.65rem;">v0.6.1</span></span>
+<footer class="waypoint-footer">
+  <span>🐯 // v0.6.1</span>
   <a href="#" class="footer-link" onclick="document.getElementById('modal-help').classList.remove('hidden');return false;">what is Waypoint?</a>
   <a href="#" class="footer-link" onclick="document.getElementById('modal-alchemy').classList.remove('hidden');return false;">✦ Alchemy suite</a>
 </footer>
 
+</div><!-- end #app -->
 <!-- Help modal -->
 <div id="modal-help" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
   <div class="modal-box">
